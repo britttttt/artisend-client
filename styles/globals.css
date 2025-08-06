@@ -22,7 +22,7 @@ textarea {
 
 body {
   background-color: var(--appBackground);
-  margin: 0;
+  margin: 1em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -48,6 +48,7 @@ button {
   border-radius: 0.5rem;
   color: var(--white);
   cursor: pointer;
+  color: #3b3b3b;
 }
 
 .btn-primary {
