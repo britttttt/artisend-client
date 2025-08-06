@@ -11,12 +11,17 @@ export function login(user) {
 }
 
 export function register(user) {
+  const formData = new FormData()
+
+  for (const key in user) {
+    if (user[key] != null) {
+      formData.append(key, user[key])
+    }
+  }
+
   return fetchWithResponse('register', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(user)
+    body: formData, 
   })
 }
 
