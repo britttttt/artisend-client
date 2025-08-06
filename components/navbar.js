@@ -30,7 +30,7 @@ export default function Navbar() {
           </span>
         </a>
         <div className="navbar-dropdown is-right">
-          <Link href="/profile" className="navbar-item">Profile</Link>
+          <Link href="/businessProfile" className="navbar-item"> Business Profile</Link>
           <hr className="navbar-divider"></hr>
           <a className="navbar-item" onClick={
             () => {

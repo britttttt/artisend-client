@@ -1,10 +1,17 @@
-export function Textarea({id, label, placeholder}) {
+export function Textarea({ id, placeholder = "", refEl = undefined, label = undefined, onChangeEvent, addlClass = "" }) {
   return (
     <div className="field">
-      <label className="label">{label}</label>
+      {label && <label htmlFor={id} className="label">{label}</label>}
       <div className="control">
-        <textarea id={id} className="textarea" placeholder={placeholder}></textarea>
+        <textarea
+          id={id}
+          className={`textarea ${addlClass}`}
+          placeholder={placeholder}
+          ref={refEl}
+          onChange={onChangeEvent}
+          rows="5" cols="50"
+        ></textarea>
       </div>
     </div>
-  )
+  );
 }

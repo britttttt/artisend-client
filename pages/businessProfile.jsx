@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
-import { Input } from '../components/form-elements'
+import { Input, Textarea } from '../components/form-elements'
 import Layout from '../components/layout'
 import Navbar from '../components/navbar'
 import { useAppContext } from '../context/state'
@@ -10,12 +10,15 @@ import { register } from '../data/auth'
 export default function Register() {
   const { setToken } = useAppContext()
   const [isBusiness, setIsBusiness] = useState(false)
+  const [banner_img, set_banner_img] = useState()
+
 
   const displayName = useRef(null)
-  const phoneNum = useRef(null)
-  const lastName = useRef(null)
-  const email = useRef(null)
-  const password = useRef(null)
+  const bio = useRef(null)
+  const phone = useRef(null)
+  const businessEmail = useRef(null)
+  const businessAddress = useRef(null)
+  const socialLink = useRef(null)
 
   const router = useRouter()
 
@@ -24,12 +27,11 @@ export default function Register() {
 
     const business = {
       displayName: displayName.current?.value,
-      phoneNum: phoneNum.current?.value,
+      bio: bio.current?.value,
       businessEmail: businessEmail.current?.value,
-      password: password.current?.value,
-      last_name: lastName.current?.value,
-      isBusiness,
-      isAdmin: false
+      phone: phone.current?.value,
+      businessAddress: businessAddress.current?.value,
+      socialLink: socialLink.current?.value
     }
 
     const res = await register(business)
@@ -49,11 +51,19 @@ export default function Register() {
         <form className="box" onSubmit={submit}>
           <h1 className="title">Welcome!</h1>
 
-          <Input id="phoneNum" refEl={phoneNum} type="text" label="Phone Number" />
-          <Input id="lastName" refEl={lastName} type="text" label="Last Name" />
-          <Input id="businessEmail" refEl={businessEmail} type="email" label="business email" required />
-          <Input id="displayName" refEl={displayName} type="text" label="DisplayName" />
-          <Input id="password" refEl={password} type="password" label="Password" />
+          < Textarea id="bio" refEl={bio} label="Bio"/>
+          <Input id="businessAddress" refEl={businessAddress} type="text" label="Business Address" />
+          <Input id="businessEmail" refEl={businessEmail} type="email" label="Business Email" required />
+          <Input id="phone" refEl={phone} type="tel" label="Business Phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" />
+          <Input id="displayName" refEl={displayName} type="text" label="Display Name" />
+          <Input id="socialLink" refEl={socialLink} type="text" label="Social Media Link" />
+
+           <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => set_banner_img(e.target.files[0])}
+          />
+          
 
           <div className="field">
             <label className="label">Account type</label>
