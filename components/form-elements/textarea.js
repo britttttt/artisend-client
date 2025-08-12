@@ -1,7 +1,7 @@
 export function Textarea({ id, placeholder = "", refEl = undefined, label = undefined, onChangeEvent, addlClass = "" }) {
   return (
     <div className="field">
-      {label && <label htmlFor={id} className="label">{label}</label>}
+      <h3>{label && <label htmlFor={id} className="label">{label}</label>}</h3>
       <div className="control">
         <textarea
           id={id}

@@ -1,18 +1,18 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Input, Textarea } from '../components/form-elements'
 import Layout from '../components/layout'
 import Navbar from '../components/navbar'
 import { useAppContext } from '../context/state'
-import { register, registerBusiness } from '../data/auth'
-import { TagsInput } from '../components/form-elements/tagsinput'
+import { createUserBusiness, getMediums } from '../data/auth'
 
 export default function Register() {
   const { setToken } = useAppContext()
-  const [isBusiness, setIsBusiness] = useState(false)
-  const [banner_img, set_banner_img] = useState()
-  const [tags, setTags] = useState([])
+  const [bannerImg, setBannerImg] = useState(null)
+  const [mediums, setMediums] = useState([])
+  const [skills, setSkills] = useState([])
+  const [availableMediums, setAvailableMediums] = useState([])
 
   const displayName = useRef(null)
   const bio = useRef(null)
@@ -23,22 +23,60 @@ export default function Register() {
 
   const router = useRouter()
 
+  useEffect(() => {
+    getMediums()
+      .then(data => setAvailableMediums(data))
+      .catch(err => console.error('Error fetching mediums:', err))
+  }, [])
+
+  const handleMediumChange = (e) => {
+    const selectedId = parseInt(e.target.value)
+    if (!mediums.includes(selectedId)) {
+      setMediums([...mediums, selectedId])
+    }
+  }
+
+
+  const relatedSkills = Array.isArray(availableMediums)
+    ? availableMediums
+      .filter(m => mediums.includes(m.id))
+      .flatMap(m => (m.skills || []).map(skill => ({
+        ...skill,
+        mediumLabel: m.label
+      })))
+    : []
+
   const submit = async (e) => {
     e.preventDefault()
 
-    const business = {
-      displayName: displayName.current?.value,
-      bio: bio.current?.value,
-      businessEmail: businessEmail.current?.value,
-      phone: phone.current?.value,
-      businessAddress: businessAddress.current?.value,
-      socialLink: socialLink.current?.value
+    const formData = new FormData()
+    formData.append('display_name', displayName.current?.value || '')
+    formData.append('bio', bio.current?.value || '')
+    formData.append('business_email', businessEmail.current?.value || '')
+    formData.append('phone', phone.current?.value || '')
+    formData.append('business_address', businessAddress.current?.value || '')
+    formData.append('social_link', socialLink.current?.value || '')
+
+    if (bannerImg) {
+      formData.append('banner_img', bannerImg)
     }
 
-    const res = await registerBusiness(business)
-    if (res.token) {
-      setToken(res.token)
-      router.push('/myProfile')
+    formData.append('mediums', JSON.stringify(mediums))
+    formData.append('skills', JSON.stringify(skills))
+
+    const token = localStorage.getItem('token')
+
+    try {
+      const res = await createUserBusiness(formData, token)
+      if (res.token) {
+        setToken(res.token)
+        router.push('/myProfile')
+      } else {
+        alert('Failed to register business')
+      }
+    } catch (error) {
+      console.error(error)
+      alert('An error occurred while registering the business')
     }
   }
 
@@ -53,45 +91,87 @@ export default function Register() {
           <Input id="phone" refEl={phone} type="tel" label="Business Phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" />
           <Input id="displayName" refEl={displayName} type="text" label="Display Name" />
           <Input id="socialLink" refEl={socialLink} type="text" label="Social Media Link" />
-          < Textarea id="bio" refEl={bio} label="Bio" />
+          <Textarea id="bio" refEl={bio} label="Bio" />
 
-          <input
+          <Input
             type="file"
             accept="image/*"
-            onChange={(e) => set_banner_img(e.target.files[0])}
+            label="Upload Banner Image"
+            onChange={(e) => setBannerImg(e.target.files[0])}
           />
 
+          <label className="label">Select Mediums</label>
+          <select onChange={handleMediumChange}>
+            <option value="">-- Select a Medium --</option>
+            {availableMediums.map(medium => (
+              <option
+                key={medium.id}
+                value={medium.id}
+                disabled={mediums.includes(medium.id)}
+              >
+                {medium.label}
+              </option>
+            ))}
+          </select>
 
-          
-          <Input id="Mediums" type='text' label="Mediums" />
-          <Input id="Skills" type="text" label="Skills" />
-
-        <TagsInput />
-          <div className="field">
-            <label className="label">Account type</label>
-            <div className="control">
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="accountType"
-                  checked={!isBusiness}
-                  onChange={() => setIsBusiness(false)}
-                />
-                &nbsp;Personal/Individual
-              </label>
-              &nbsp;&nbsp;
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="accountType"
-                  checked={isBusiness}
-                  onChange={() => setIsBusiness(true)}
-                />
-                &nbsp;Business
-              </label>
-            </div>
+          <div className="tags">
+            {mediums.map(id => {
+              const medium = availableMediums.find(m => m.id === id)
+              return (
+                <span key={id} className="tag is-info">{medium?.label}
+                <button
+                        type="button"
+                        className="delete is-small"
+                        onClick={() => {
+                          setMediums(mediums.filter(mid => mid !== id))
+                        }}
+                        aria-label={`Remove ${medium.label}`}
+                      >x</button>
+                      </span>
+              )
+            })}
           </div>
 
+          {mediums.length > 0 && (
+            <>
+              <label className="label">Select Skills</label>
+              <select
+                multiple
+                value={skills}
+                onChange={(e) => {
+                  const selected = Array.from(e.target.selectedOptions, opt => parseInt(opt.value))
+                  setSkills(selected)
+                }}
+              >
+                {relatedSkills.map(skill => (
+                    <option key={skill.id} value={skill.id} disabled={skills.includes(skill.id)}>
+                      {skill.mediumLabel} — {skill.label}
+                    </option>
+                ))}
+              </select>
+
+              <div className="tags">
+                {skills.map(id => {
+                  const skill = relatedSkills.find(s => s.id === id)
+                  if (!skill) return null
+                  return (
+                    <span key={id} className="tag is-info">
+                      {skill?.label} ({skill.mediumLabel})
+                      <button
+                        type="button"
+                        className="delete is-small"
+                        onClick={() => {
+                          setSkills(skills.filter(sid => sid !== id))
+                        }}
+                        aria-label={`Remove ${skill.label}`}
+                      >x</button>
+                    </span>
+                  )
+                })}
+              </div>
+
+            </>
+          )}
 
           <div className="field is-grouped">
             <div className="control">

@@ -24,25 +24,30 @@ export function register(user) {
     body: formData, 
   })
 }
-export function registerBusiness(user) {
-  const formData = new FormData()
-
-  for (const key in user) {
-    if (user[key] != null) {
-      formData.append(key, user[key])
-    }
-  }
-
-  return fetchWithResponse('register', {
+export const createUserBusiness = (formData, token) => {
+  return fetch('/userbusiness/', {
     method: 'POST',
-    body: formData, 
-  })
+    headers:{
+      'Authorization': `Token ${token}`,
+    },
+    body: formData
+  }).then(response => response.json())
 }
 
 export function getUserProfile() {
   return fetchWithResponse('profile', {
     method: "GET",
     headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`,
+    }
+  })
+}
+
+
+export const getMediums = () => {
+  return fetchWithResponse('medium',{
+    method:"GET",
+    headers:{
       Authorization: `Token ${localStorage.getItem('token')}`,
     }
   })
