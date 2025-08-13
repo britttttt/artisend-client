@@ -21,31 +21,40 @@ export default function Register() {
 
   const router = useRouter()
 
-  const submit = async (e) => {
-    e.preventDefault()
+  const submit = (e) => {
+  e.preventDefault();
 
-    const user = {
-      username: username.current?.value,
-      password: password.current?.value,
-      first_name: firstName.current?.value,
-      last_name: lastName.current?.value,
-      email: email.current?.value,
-      postal_code: postalCode.current?.value,
-      avatar,
-      isBusiness,
-      isAdmin: false
-    }
+  const user = {
+    username: username.current?.value,
+    password: password.current?.value,
+    first_name: firstName.current?.value,
+    last_name: lastName.current?.value,
+    email: email.current?.value,
+    postal_code: postalCode.current?.value,
+    avatar,
+    isBusiness,
+    isAdmin: false
+  };
 
-    const res = await register(user)
-    if (res.token) {
-      setToken(res.token)
+  register(user)
+  .then((res) => {
+    console.log('Register response:', res);
+    if (res && res.token) {
+      setToken(res.token);
       if (isBusiness) {
-        router.push('/businessProfile')
+        router.push('/businessProfile');
       } else {
-        router.push('/')
+        router.push('/');
       }
+    } else {
+      alert(res?.error || 'Registration failed.');
     }
-  }
+  })
+  .catch((err) => {
+    console.error('Register failed:', err);
+    alert('An error occurred during registration.');
+  });
+};
 
   return (
     <div className="columns is-centered">

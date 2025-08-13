@@ -35,6 +35,12 @@ export default function Register() {
       setMediums([...mediums, selectedId])
     }
   }
+  const handleSkillChange = (e) => {
+    const selectedId = parseInt(e.target.value)
+    if (!skills.includes(selectedId)) {
+      setSkills([...skills, selectedId])
+    }
+  }
 
 
   const relatedSkills = Array.isArray(availableMediums)
@@ -47,38 +53,54 @@ export default function Register() {
     : []
 
   const submit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData()
-    formData.append('display_name', displayName.current?.value || '')
-    formData.append('bio', bio.current?.value || '')
-    formData.append('business_email', businessEmail.current?.value || '')
-    formData.append('phone', phone.current?.value || '')
-    formData.append('business_address', businessAddress.current?.value || '')
-    formData.append('social_link', socialLink.current?.value || '')
+    // Build FormData for file + text fields
+    const formData = new FormData();
+    formData.append('display_name', displayName.current?.value || '');
+    formData.append('bio', bio.current?.value || '');
+    formData.append('business_email', businessEmail.current?.value || '');
+    formData.append('phone', phone.current?.value || '');
+    formData.append('business_address', businessAddress.current?.value || '');
+    formData.append('social_link', socialLink.current?.value || '');
 
     if (bannerImg) {
-      formData.append('banner_img', bannerImg)
+      formData.append('banner_img', bannerImg);
     }
 
-    formData.append('mediums', JSON.stringify(mediums))
-    formData.append('skills', JSON.stringify(skills))
+    // Append IDs as JSON strings
+    formData.append('mediums', JSON.stringify(mediums));
+    formData.append('skills', JSON.stringify(skills));
 
-    const token = localStorage.getItem('token')
+    // Get token for authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You must be logged in to create a business account.');
+      return;
+    }
 
     try {
-      const res = await createUserBusiness(formData, token)
-      if (res.token) {
-        setToken(res.token)
-        router.push('/myProfile')
+      const res = await fetch('http://localhost:8000/userbusiness', {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) { // or if (data.id)
+        alert('Business account successfully created!');
+        router.push('/profile');
       } else {
-        alert('Failed to register business')
+        alert('Failed to register business');
       }
     } catch (error) {
-      console.error(error)
-      alert('An error occurred while registering the business')
+      console.error('Network or server error:', error);
+      alert('An error occurred while registering the business');
     }
-  }
+  };
 
   return (
     <div className="columns is-centered">
@@ -114,20 +136,21 @@ export default function Register() {
             ))}
           </select>
 
+
           <div className="tags">
             {mediums.map(id => {
               const medium = availableMediums.find(m => m.id === id)
               return (
                 <span key={id} className="tag is-info">{medium?.label}
-                <button
-                        type="button"
-                        className="delete is-small"
-                        onClick={() => {
-                          setMediums(mediums.filter(mid => mid !== id))
-                        }}
-                        aria-label={`Remove ${medium.label}`}
-                      >x</button>
-                      </span>
+                  <button
+                    type="button"
+                    className="delete is-small"
+                    onClick={() => {
+                      setMediums(mediums.filter(mid => mid !== id))
+                    }}
+                    aria-label={`Remove ${medium.label}`}
+                  >x</button>
+                </span>
               )
             })}
           </div>
@@ -138,36 +161,36 @@ export default function Register() {
               <select
                 multiple
                 value={skills}
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions, opt => parseInt(opt.value))
-                  setSkills(selected)
-                }}
+                onChange={handleSkillChange}
               >
                 {relatedSkills.map(skill => (
-                    <option key={skill.id} value={skill.id} disabled={skills.includes(skill.id)}>
-                      {skill.mediumLabel} — {skill.label}
-                    </option>
+                  <option key={skill.id} value={skill.id} disabled={skills.includes(skill.id)}>
+                    {skill.mediumLabel} — {skill.label}
+                  </option>
                 ))}
               </select>
 
-              <div className="tags">
-                {skills.map(id => {
-                  const skill = relatedSkills.find(s => s.id === id)
-                  if (!skill) return null
-                  return (
-                    <span key={id} className="tag is-info">
-                      {skill?.label} ({skill.mediumLabel})
-                      <button
-                        type="button"
-                        className="delete is-small"
-                        onClick={() => {
-                          setSkills(skills.filter(sid => sid !== id))
-                        }}
-                        aria-label={`Remove ${skill.label}`}
-                      >x</button>
-                    </span>
-                  )
-                })}
+              <div>
+
+                <div className="tags">
+                  {skills.map(id => {
+                    const skill = relatedSkills.find(s => s.id === id)
+                    if (!skill) return null
+                    return (
+                      <span key={id} className="tag is-info">
+                        {skill?.label} ({skill.mediumLabel})
+                        <button
+                          type="button"
+                          className="delete is-small"
+                          onClick={() => {
+                            setSkills(skills.filter(sid => sid !== id))
+                          }}
+                          aria-label={`Remove ${skill.label}`}
+                        >x</button>
+                      </span>
+                    )
+                  })}
+                </div>
               </div>
 
             </>
@@ -178,7 +201,7 @@ export default function Register() {
               <button className="button is-link" type="submit">Submit</button>
             </div>
             <div className="control">
-              <Link href="/myProfile">
+              <Link href="/">
                 <button className="button is-link" type="button">Cancel</button>
               </Link>
             </div>
