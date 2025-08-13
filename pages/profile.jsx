@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import { useAppContext } from "../context/state";
 import { getUserProfile } from "../data/auth";
 
+
 export default function Profile() {
   const { profile, setProfile } = useAppContext();
 
   useEffect(() => {
   getUserProfile().then((profileData) => {
-    if (profileData && profileData.length > 0) {
-      setProfile(profileData[0]); // <-- take the first item
+    if (profileData) {
+      setProfile(Array.isArray(profileData) ? profileData[0] : profileData);
     }
   });
 }, []);
@@ -30,6 +31,9 @@ export default function Profile() {
       {Object.keys(business).length > 0 && (
         <section>
           <h3>Business Information</h3>
+          {profile.profile_pic && (
+            <img src={user.profile_pic} alt={`${user.name || business.display_name} profile`} />
+          )}
           <p><strong>Display Name:</strong> {business.display_name}</p>
           <p><strong>Business Email:</strong> {business.business_email}</p>
           <p><strong>Phone:</strong> {business.phone}</p>
