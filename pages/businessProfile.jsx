@@ -52,55 +52,71 @@ export default function Register() {
       })))
     : []
 
-  const submit = async (e) => {
-    e.preventDefault();
+const submit = async (e) => {
+  e.preventDefault();
 
-    // Build FormData for file + text fields
-    const formData = new FormData();
-    formData.append('display_name', displayName.current?.value || '');
-    formData.append('bio', bio.current?.value || '');
-    formData.append('business_email', businessEmail.current?.value || '');
-    formData.append('phone', phone.current?.value || '');
-    formData.append('business_address', businessAddress.current?.value || '');
-    formData.append('social_link', socialLink.current?.value || '');
+  const formData = new FormData();
+  formData.append('display_name', displayName.current?.value || '');
+  formData.append('bio', bio.current?.value || '');
+  formData.append('business_email', businessEmail.current?.value || '');
+  formData.append('phone', phone.current?.value || '');
+  formData.append('business_address', businessAddress.current?.value || '');
+  formData.append('social_link', socialLink.current?.value || '');
+  if (bannerImg) {
+    formData.append('banner_img', bannerImg);
+  }
 
-    if (bannerImg) {
-      formData.append('banner_img', bannerImg);
-    }
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('You must be logged in to create a business account.');
+    return;
+  }
 
-    // Append IDs as JSON strings
-    formData.append('mediums', JSON.stringify(mediums));
-    formData.append('skills', JSON.stringify(skills));
+  try {
+    // 1️⃣ Create the business profile
+    const res = await fetch('http://localhost:8000/userbusiness', {
+      method: 'POST',
+      headers: { Authorization: `Token ${token}` },
+      body: formData,
+    });
 
-    // Get token for authentication
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('You must be logged in to create a business account.');
+    const businessData = await res.json();
+
+    if (!res.ok) {
+      console.error('Business creation failed:', businessData);
+      alert('Failed to register business');
       return;
     }
 
-    try {
-      const res = await fetch('http://localhost:8000/userbusiness', {
+    for (const mediumId of mediums) {
+      await fetch('http://localhost:8000/usermedium', {
         method: 'POST',
         headers: {
           Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify({ medium_id: mediumId }),
       });
-
-      const data = await res.json();
-
-      if (res.ok) { // or if (data.id)
-        alert('Business account successfully created!');
-        router.push('/profile');
-      } else {
-        alert('Failed to register business');
-      }
-    } catch (error) {
-      console.error('Network or server error:', error);
-      alert('An error occurred while registering the business');
     }
-  };
+
+    for (const skillId of skills) {
+      await fetch('http://localhost:8000/userskill', {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ skill_id: skillId }),
+      });
+    }
+
+    alert('Business account and skills/mediums successfully saved!');
+    router.push('/profile');
+  } catch (error) {
+    console.error('Network or server error:', error);
+    alert('An error occurred while registering the business');
+  }
+};
 
   return (
     <div className="columns is-centered">

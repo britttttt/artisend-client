@@ -32,8 +32,8 @@ export default function Register() {
     email: email.current?.value,
     postal_code: postalCode.current?.value,
     avatar,
-    isBusiness,
-    isAdmin: false
+    is_business: false,
+    is_admin: false
   };
 
   register(user)

@@ -64,3 +64,22 @@ export const getUserProfile = () => {
     }
   })
 }
+
+export const getCategories = () => {
+  return fetchWithResponse('category', {  
+    method: "GET",
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`,
+    }
+  });
+};
+
+export const createPost = (formData) => {
+  return fetchWithResponse('posts', {
+    method: "POST",
+    headers: {
+      Authorization: `Token ${localStorage.getItem('token')}`
+    },
+    body: formData
+  });
+};
