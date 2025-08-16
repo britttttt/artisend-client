@@ -4,6 +4,7 @@ import { getUserProfile } from "../data/auth";
 import UserPosts from "../components/user-posts";
 import Layout from "../components/layout";
 import Navbar from "../components/navbar";
+import { getBusinessSkillsByUserId } from "../data/skills-mediums";
 
 export default function Profile() {
   const { profile, setProfile, token, loadingProfile } = useAppContext();
@@ -15,6 +16,7 @@ export default function Profile() {
     setError(null);
     try {
       const profileData = await getUserProfile();
+      
       
       if (profileData) {
         const normalizedProfile = Array.isArray(profileData) ? profileData[0] : profileData;
@@ -31,6 +33,7 @@ export default function Profile() {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     if (token) {
@@ -92,18 +95,18 @@ export default function Profile() {
     return link.startsWith('http') ? link : `https://${link}`;
   };
 
-  const socialLink = formatSocialLink(profileData.social_link);
+  const socialLink = formatSocialLink(profileData?.social_link);
 
   return (
     <div>
       <h1>Profile</h1>
 
       <section>
-        <h2>{profileData.display_name || profileData.name || 'User'}</h2>
+        <h2>{profileData?.display_name || profileData?.name || 'User'}</h2>
         
         <h3>Business Information</h3>
         
-        {profileData.banner_img && (
+        {profileData?.banner_img && (
           <img
             src={profileData.banner_img}
             alt={`${profileData.display_name} banner`}
@@ -121,14 +124,15 @@ export default function Profile() {
         )}
 
         <div style={{ marginBottom: '20px' }}>
-          <p><strong>Display Name:</strong> {profileData.display_name}</p>
-          <p><strong>Business Email:</strong> {profileData.business_email}</p>
-          <p><strong>Phone:</strong> {profileData.phone}</p>
-          {profileData.business_address && (
+          <p><strong>Display Name:</strong> {profileData?.display_name || 'Not provided'}</p>
+          <p><strong>Business Email:</strong> {profileData?.business_email || 'Not provided'}</p>
+          <p><strong>Phone:</strong> {profileData?.phone || 'Not provided'}</p>
+          {profileData?.business_address && (
             <p><strong>Address:</strong> {profileData.business_address}</p>
           )}
-          <p><strong>Bio:</strong> {profileData.bio}</p>
-          <p><strong>Commissions:</strong> {profileData.commissions_open ? 'Open' : 'Closed'}</p>
+          <p><strong>Bio:</strong> {profileData?.bio || 'No bio available'}</p>
+          <p><strong>Commissions:</strong> {profileData?.commissions_open ? 'Open' : 'Closed'}</p>
+
           
           {socialLink && (
             <p>
@@ -144,16 +148,18 @@ export default function Profile() {
             </p>
           )}
           
-          {profileData.mediums && profileData.mediums.length > 0 && (
+          {profileData?.mediums && profileData.mediums.length > 0 && (
             <p><strong>Mediums:</strong> {profileData.mediums.join(', ')}</p>
           )}
           
-          {profileData.skills && profileData.skills.length > 0 && (
+          {profileData?.skills && profileData.skills.length > 0 && (
             <p><strong>Skills:</strong> {profileData.skills.join(', ')}</p>
           )}
         </div>
       </section>
 
+
+     
       {/* Posts section */}
       <section style={{ marginTop: '30px' }}>
         <h3>Recent Posts</h3>

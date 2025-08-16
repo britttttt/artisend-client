@@ -129,27 +129,67 @@ export default function BusinessProfile() {
         return;
       }
 
-      // Handle mediums and skills (simplified - you may need to implement proper update logic)
+      console.log('Business profile created/updated:', businessData);
+
+      // Now create user mediums and skills
       for (const mediumId of mediums) {
-        await fetch('http://localhost:8000/usermedium', {
-          method: 'POST',
-          headers: {
-            Authorization: `Token ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ medium_id: mediumId }),
-        });
+        try {
+          // Find the medium object to get its label
+          const mediumObj = availableMediums.find(m => m.id === mediumId);
+          if (!mediumObj) {
+            console.error(`Medium with ID ${mediumId} not found`);
+            continue;
+          }
+
+          const mediumRes = await fetch('http://localhost:8000/usermedium', {
+            method: 'POST',
+            headers: {
+              Authorization: `Token ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ medium: mediumObj.label }),
+          });
+          
+          if (!mediumRes.ok) {
+            const errorData = await mediumRes.json();
+            console.error('Failed to create user medium:', errorData);
+          } else {
+            const createdMedium = await mediumRes.json();
+            console.log(`Created user medium:`, createdMedium);
+          }
+        } catch (err) {
+          console.error('Error creating user medium:', err);
+        }
       }
 
       for (const skillId of skills) {
-        await fetch('http://localhost:8000/userskill', {
-          method: 'POST',
-          headers: {
-            Authorization: `Token ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ skill_id: skillId }),
-        });
+        try {
+          // Find the skill object to get its label
+          const skillObj = relatedSkills.find(s => s.id === skillId);
+          if (!skillObj) {
+            console.error(`Skill with ID ${skillId} not found`);
+            continue;
+          }
+
+          const skillRes = await fetch('http://localhost:8000/userskill', {
+            method: 'POST',
+            headers: {
+              Authorization: `Token ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ skill: skillObj.label }),
+          });
+          
+          if (!skillRes.ok) {
+            const errorData = await skillRes.json();
+            console.error('Failed to create user skill:', errorData);
+          } else {
+            const createdSkill = await skillRes.json();
+            console.log(`Created user skill:`, createdSkill);
+          }
+        } catch (err) {
+          console.error('Error creating user skill:', err);
+        }
       }
 
       alert(`Business profile ${isEditing ? 'updated' : 'created'} successfully!`);
