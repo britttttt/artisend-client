@@ -32,8 +32,8 @@ export default function Register() {
     email: email.current?.value,
     postal_code: postalCode.current?.value,
     avatar,
-    isBusiness,
-    isAdmin: false
+    is_business: isBusiness,
+    is_admin: false
   };
 
   register(user)
@@ -74,6 +74,15 @@ export default function Register() {
             accept="image/*"
             onChange={(e) => setAvatar(e.target.files[0])}
           />
+          {avatar && (
+          <div style={{ marginTop: "10px" }}>
+            <img
+              src={URL.createObjectURL(avatar)}
+              alt="Preview"
+              style={{ maxWidth: "100px", borderRadius: "8px" }}
+            />
+          </div>
+        )}
 
           <div className="field">
             <label className="label">Account type</label>

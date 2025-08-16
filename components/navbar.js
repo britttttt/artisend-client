@@ -8,8 +8,6 @@ export default function Navbar() {
   const navbar = useRef()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  console.log(profile)
-
   useEffect(() => {
     if (token) {
       setIsLoggedIn(true)
@@ -24,19 +22,35 @@ export default function Navbar() {
   const getLoggedInButtons = () => {
     return (
       <div className="navbar-item has-dropdown is-hoverable">
-        <a className="navbar-link">
-          <span className="icon">
-            <i className="fas fa-user-circle is-medium"></i>
-          </span>
+        <a className="navbar-link flex items-center">
+          {profile?.avatar || profile?.profile_image ? (
+            <img
+              src={profile.avatar || profile.profile_image}
+              alt={profile.display_name || "User"}
+              className="rounded-full mr-2"
+              style={{ width: "32px", height: "32px", objectFit: "cover" }}
+            />
+          ) : (
+            <span className="icon">
+              <i className="fas fa-user-circle is-medium"></i>
+            </span>
+          )}
+          <span>{profile?.display_name || profile?.username || "User"}</span>
         </a>
         <div className="navbar-dropdown is-right">
-          <Link href="/businessProfile" className="navbar-item"> Business Profile</Link>
-          <Link href="/profile" className="navbar-item"> myProfile</Link>
-          <hr className="navbar-divider"></hr>
-          <a className="navbar-item" onClick={
-            () => {
+          <Link href="/businessProfile" className="navbar-item">
+            Business Profile
+          </Link>
+          <Link href="/profile" className="navbar-item">
+            My Profile
+          </Link>
+          <hr className="navbar-divider" />
+          <a
+            className="navbar-item"
+            onClick={() => {
               localStorage.removeItem('token')
               setIsLoggedIn(false)
+              window.location.href = "/"
             }}
           >
             Log out
@@ -45,16 +59,16 @@ export default function Navbar() {
       </div>
     )
   }
-  console.log(profile)
+
   const getLoggedOutButtons = () => {
     return (
       <div className="navbar-item">
         <div className="buttons">
           <Link href="/register" className="button is-primary">
-              <strong>Sign up</strong>
+            <strong>Sign up</strong>
           </Link>
           <Link href="/login" className="button is-light">
-              Log in
+            Log in
           </Link>
         </div>
       </div>
@@ -62,16 +76,29 @@ export default function Navbar() {
   }
 
   return (
-
-    <nav className="navbar mb-3 is-warning px-5 is-fixed-top is-top" role="navigation" aria-label="main navigation">
+    <nav
+      className="navbar mb-3 is-warning px-5 is-fixed-top is-top"
+      role="navigation"
+      aria-label="main navigation"
+    >
       <div className="navbar-brand">
+        <Link href="/">
+         Home
+        </Link>
 
-          <Link href="/">
-            <img src="/images/logo.png" alt="Logo" style={{ width:"4rem", height: "4rem"}} className="relative" />
+        <Link href="/edit-profile" className="button is-light">
+            Edit User
           </Link>
 
-
-        <a role="button" className="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" ref={hamburger} onClick={showMobileNavbar}>
+        <a
+          role="button"
+          className="navbar-burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbarBasicExample"
+          ref={hamburger}
+          onClick={showMobileNavbar}
+        >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
@@ -80,9 +107,7 @@ export default function Navbar() {
 
       <div className="navbar-menu" ref={navbar}>
         <div className="navbar-end">
-          {
-            isLoggedIn ? getLoggedInButtons() : getLoggedOutButtons()
-          }
+          {isLoggedIn ? getLoggedInButtons() : getLoggedOutButtons()}
         </div>
       </div>
     </nav>
