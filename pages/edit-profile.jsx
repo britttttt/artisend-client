@@ -5,13 +5,13 @@ import { Input } from "../components/form-elements";
 import Layout from "../components/layout";
 import Navbar from "../components/navbar";
 import { useAppContext } from "../context/state";
-import { getUserProfile, updateUserProfile } from "../data/auth";
+import { getUserProfile, updateUserProfile, getUserAccount, updateUserAccount } from "../data/auth";
 
 export default function EditProfile() {
-    const { token } = useAppContext();
+    const { token, profile } = useAppContext();
     const [isBusiness, setIsBusiness] = useState(false);
     const [avatar, setAvatar] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -21,18 +21,50 @@ export default function EditProfile() {
 
     const router = useRouter();
 
-    useEffect(() => {
-        if (!token) return;
+    // Normalize profile data (handle array/object formats)
+    const profileData = Array.isArray(profile) ? profile[0] : profile;
 
-        getUserProfile(token).then((data) => {
-            setFirstName(data.first_name || "");
-            setLastName(data.last_name || "");
-            setEmail(data.email || "");
-            setPostalCode(data.postal_code || "");
-            setUsername(data.username || "");
-            setIsBusiness(data.is_business || false);
-            setLoading(false);
-        });
+    useEffect(() => {
+        console.log('useEffect triggered');
+        console.log('Token exists:', !!token);
+        console.log('Token value:', token);
+        
+        // Fetch actual user account data, not business profile
+        if (token) {
+            console.log('Fetching user account from API');
+            setLoading(true);
+            getUserAccount(token).then((data) => {
+                console.log('User account API response:', data);
+                console.log('Data type:', typeof data);
+                console.log('Is array:', Array.isArray(data));
+                
+                const normalizedData = Array.isArray(data) ? data[0] : data;
+                console.log('Normalized data:', normalizedData);
+                console.log('Available fields:', Object.keys(normalizedData || {}));
+                
+                setFirstName(normalizedData?.first_name || "");
+                setLastName(normalizedData?.last_name || "");
+                setEmail(normalizedData?.email || "");
+                setPostalCode(normalizedData?.postal_code || "");
+                setUsername(normalizedData?.username || "");
+                setIsBusiness(normalizedData?.is_business || false);
+                
+                console.log('Set values:', {
+                    firstName: normalizedData?.first_name,
+                    lastName: normalizedData?.last_name,
+                    email: normalizedData?.email,
+                    postalCode: normalizedData?.postal_code,
+                    username: normalizedData?.username
+                });
+                
+                setLoading(false);
+            }).catch((err) => {
+                console.error('Failed to fetch user account:', err);
+                setLoading(false);
+            });
+        } else {
+            console.log('No token available');
+        }
     }, [token]);
 
     const submit = (e) => {
@@ -45,10 +77,9 @@ export default function EditProfile() {
             email,
             postal_code: postalCode,
             avatar,
-            is_business: isBusiness,
         };
 
-        updateUserProfile(token, user)
+        updateUserAccount(token, user)
             .then((res) => {
                 console.log("Profile updated:", res);
                 alert("Profile updated successfully!");
@@ -59,7 +90,6 @@ export default function EditProfile() {
                 alert("An error occurred while updating your profile.");
             });
     };
-
 
     if (loading) return <p>Loading profile...</p>;
 

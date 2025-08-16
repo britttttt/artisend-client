@@ -1,83 +1,184 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAppContext } from "../context/state";
 import { getUserProfile } from "../data/auth";
-
+import UserPosts from "../components/user-posts";
+import Layout from "../components/layout";
+import Navbar from "../components/navbar";
 
 export default function Profile() {
-  const { profile, setProfile } = useAppContext();
+  const { profile, setProfile, token, loadingProfile } = useAppContext();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const profileData = await getUserProfile();
+      
+      if (profileData) {
+        const normalizedProfile = Array.isArray(profileData) ? profileData[0] : profileData;
+        console.log('Fetched fresh profile from API:', normalizedProfile);
+        setProfile(normalizedProfile);
+        // Save to localStorage immediately after successful fetch
+        localStorage.setItem('userProfile', JSON.stringify(normalizedProfile));
+      }
+    } catch (err) {
+      console.error("Profile fetch error:", err);
+      setError("Could not fetch profile: " + err.message);
+      // Don't clear localStorage on fetch error - keep the cached version
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-  getUserProfile().then((profileData) => {
-    if (profileData) {
-      setProfile(Array.isArray(profileData) ? profileData[0] : profileData);
+    if (token) {
+      if (profile) {
+        // Ensure we're saving the normalized object, not an array
+        const profileToSave = Array.isArray(profile) ? profile[0] : profile;
+        localStorage.setItem('userProfile', JSON.stringify(profileToSave));
+      } else {
+        // Try to restore from localStorage first
+        const savedProfile = localStorage.getItem('userProfile');
+        if (savedProfile) {
+          try {
+            const parsedProfile = JSON.parse(savedProfile);
+            // Ensure we always set a normalized object, not an array
+            const normalizedProfile = Array.isArray(parsedProfile) ? parsedProfile[0] : parsedProfile;
+            console.log('Restored profile from localStorage:', normalizedProfile);
+            setProfile(normalizedProfile);
+          } catch (e) {
+            console.error('Failed to parse saved profile:', e);
+            localStorage.removeItem('userProfile'); // Clean up corrupted data
+            fetchProfile();
+          }
+        } else {
+          console.log('No saved profile found, fetching from API');
+          fetchProfile();
+        }
+      }
     }
-  });
-}, []);
+  }, [token, profile]);
 
-  if (!profile) {
-    return <p>Loading profile...</p>;
+  // Show loading state from context
+  if (loadingProfile) {
+    return <p>Loading user session...</p>;
   }
 
-  const business = profile.business || profile
+  // Show if no token
+  if (!token) {
+    return (
+      <div>
+        <h1>Profile</h1>
+        <p>You must be logged in to view this page.</p>
+        <p><a href="/login">Click here to log in</a></p>
+      </div>
+    );
+  }
+
+  if (loading) return <p>Loading profile data...</p>;
+  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+
+  if (!profile) {
+    return <p>No profile data available.</p>;
+  }
+
+  // Handle both array and object formats
+  const profileData = Array.isArray(profile) ? profile[0] : profile;
+
+  const formatSocialLink = (link) => {
+    if (!link) return null;
+    return link.startsWith('http') ? link : `https://${link}`;
+  };
+
+  const socialLink = formatSocialLink(profileData.social_link);
 
   return (
     <div>
       <h1>Profile</h1>
 
       <section>
-        <h2>{profile.name || business.display_name}</h2>
-      </section>
+        <h2>{profileData.display_name || profileData.name || 'User'}</h2>
+        
+        <h3>Business Information</h3>
+        
+        {profileData.banner_img && (
+          <img
+            src={profileData.banner_img}
+            alt={`${profileData.display_name} banner`}
+            style={{ 
+              width: '100%', 
+              maxHeight: '200px', 
+              objectFit: 'cover',
+              marginBottom: '20px',
+              borderRadius: '8px'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        )}
 
-      {Object.keys(business).length > 0 && (
-        <section>
-          <h3>Business Information</h3>
-          {profile.profile_pic && (
-            <img src={user.profile_pic} alt={`${user.name || business.display_name} profile`} />
+        <div style={{ marginBottom: '20px' }}>
+          <p><strong>Display Name:</strong> {profileData.display_name}</p>
+          <p><strong>Business Email:</strong> {profileData.business_email}</p>
+          <p><strong>Phone:</strong> {profileData.phone}</p>
+          {profileData.business_address && (
+            <p><strong>Address:</strong> {profileData.business_address}</p>
           )}
-          <p><strong>Display Name:</strong> {business.display_name}</p>
-          <p><strong>Business Email:</strong> {business.business_email}</p>
-          <p><strong>Phone:</strong> {business.phone}</p>
-          <p><strong>Address:</strong> {business.business_address}</p>
-          <p><strong>Bio:</strong> {business.bio}</p>
-          {business.social_link && (
+          <p><strong>Bio:</strong> {profileData.bio}</p>
+          <p><strong>Commissions:</strong> {profileData.commissions_open ? 'Open' : 'Closed'}</p>
+          
+          {socialLink && (
             <p>
               <strong>Social Link:</strong>{" "}
-              <a href={business.social_link} target="_blank" rel="noopener noreferrer">
-                {business.social_link}
+              <a 
+                href={socialLink} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ color: '#007bff', textDecoration: 'underline' }}
+              >
+                {profileData.social_link}
               </a>
             </p>
           )}
-          {business.banner_img && (
-            <img
-              src={business.banner_img}
-              alt={`${business.display_name} banner`}
-              style={{ maxWidth: "100%", height: "auto" }}
-            />
+          
+          {profileData.mediums && profileData.mediums.length > 0 && (
+            <p><strong>Mediums:</strong> {profileData.mediums.join(', ')}</p>
           )}
-          {business.mediums && business.mediums.length > 0 && (
-            <div>
-              <strong>Mediums:</strong>
-              <ul>
-                {business.mediums.map((m) => (
-                  <li key={m.id}>{m.label}</li>
-                ))}
-              </ul>
-            </div>
+          
+          {profileData.skills && profileData.skills.length > 0 && (
+            <p><strong>Skills:</strong> {profileData.skills.join(', ')}</p>
           )}
-          {business.skills && business.skills.length > 0 && (
-            <div>
-              <strong>Skills:</strong>
-              <ul>
-                {business.skills.map((s) => (
-                  <li key={s.id}>
-                    {s.label} {s.mediumLabel && `(${s.mediumLabel})`}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </section>
-      )}
+        </div>
+      </section>
+
+      {/* Posts section */}
+      <section style={{ marginTop: '30px' }}>
+        <h3>Recent Posts</h3>
+        {profileData?.user ? (
+          <UserPosts userId={profileData.user} token={token} />
+        ) : (
+          <div style={{ 
+            background: '#fff3cd', 
+            padding: '15px', 
+            borderRadius: '5px',
+            border: '1px solid #ffeaa7'
+          }}>
+            <p>Unable to load posts: User ID not found in profile data.</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
+
+Profile.getLayout = function getLayout(page) {
+  return (
+    <Layout>
+      <Navbar />
+      {page}
+    </Layout>
+  );
+};

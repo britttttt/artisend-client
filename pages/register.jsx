@@ -32,7 +32,7 @@ export default function Register() {
     email: email.current?.value,
     postal_code: postalCode.current?.value,
     avatar,
-    is_business: false,
+    is_business: isBusiness,
     is_admin: false
   };
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import NearbyPosts from "./posts";
 import { useAppContext } from "../context/state";
 
+
 export default function Home() {
   const { token } = useAppContext(); // get the current user token
 

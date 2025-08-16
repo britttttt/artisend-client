@@ -83,3 +83,38 @@ export const createPost = (formData) => {
     body: formData
   });
 };
+
+export const getUserAccount = (token) => {
+  return fetchWithResponse('user/me', {
+    method: "GET",
+    headers: {
+      Authorization: `Token ${token}`,
+    }
+  });
+};
+
+export const updateUserAccount = (token, userData) => {
+  const formData = new FormData();
+  for (const key in userData) {
+    if (userData[key] != null) {
+      formData.append(key, userData[key]);
+    }
+  }
+
+  return fetchWithResponse('user/1', {  // Use the user's ID, or just 'user/me' if your backend supports it
+    method: 'PATCH',
+    headers: {
+      Authorization: `Token ${token}`,
+    },
+    body: formData,
+  });
+};
+
+export const getBusinessProfileByUserId = (userId, token) => {
+  return fetchWithResponse(`businessprofile?user=${userId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Token ${token}`,
+    }
+  });
+};
