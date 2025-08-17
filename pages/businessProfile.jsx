@@ -93,8 +93,23 @@ export default function BusinessProfile() {
     formData.append('phone', phone.current?.value || '');
     formData.append('business_address', businessAddress.current?.value || '');
     formData.append('social_link', socialLink.current?.value || '');
+    
+    // Debug banner image upload
     if (bannerImg) {
+      console.log('Banner image to upload:', {
+        name: bannerImg.name,
+        size: bannerImg.size,
+        type: bannerImg.type
+      });
       formData.append('banner_img', bannerImg);
+    } else {
+      console.log('No banner image selected');
+    }
+
+    // Debug FormData contents
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
     }
 
     if (!token) {
@@ -238,12 +253,33 @@ export default function BusinessProfile() {
             </div>
           )}
 
-          <Input
-            type="file"
-            accept="image/*"
-            label={isEditing ? "Upload New Banner Image (optional)" : "Upload Banner Image"}
-            onChange={(e) => setBannerImg(e.target.files[0])}
-          />
+          <div className="field">
+            <label className="label">
+              {isEditing ? "Upload New Banner Image (optional)" : "Upload Banner Image"}
+            </label>
+            <div className="control">
+              <input
+                className="input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  console.log('File selected:', file);
+                  setBannerImg(file);
+                }}
+              />
+            </div>
+            {bannerImg && (
+              <div style={{ marginTop: "10px" }}>
+                <p>Selected: {bannerImg.name}</p>
+                <img
+                  src={URL.createObjectURL(bannerImg)}
+                  alt="Banner preview"
+                  style={{ maxWidth: "200px", borderRadius: "8px" }}
+                />
+              </div>
+            )}
+          </div>
 
           <label className="label">Select Mediums</label>
           <select onChange={handleMediumChange}>

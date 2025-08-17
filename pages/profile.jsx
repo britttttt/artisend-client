@@ -99,32 +99,31 @@ export default function Profile() {
 
   return (
     <div>
-      <h1>Profile</h1>
 
       <section>
-        <h2>{profileData?.display_name || profileData?.name || 'User'}</h2>
         
-        <h3>Business Information</h3>
         
         {profileData?.banner_img && (
           <img
-            src={profileData.banner_img}
-            alt={`${profileData.display_name} banner`}
-            style={{ 
-              width: '100%', 
-              maxHeight: '200px', 
-              objectFit: 'cover',
-              marginBottom: '20px',
-              borderRadius: '8px'
-            }}
+          src={profileData.banner_img}
+          alt={`${profileData.display_name} banner`}
+          style={{ 
+            width: '100%', 
+            maxHeight: '500px', 
+            objectFit: 'cover',
+            marginBottom: '20px',
+            borderRadius: '8px'
+          }}
             onError={(e) => {
               e.target.style.display = 'none';
             }}
-          />
-        )}
+            />
+          )}
+          
 
+          <h2>About</h2>
+          <h3>{profileData?.display_name || profileData?.name || 'User'}</h3>
         <div style={{ marginBottom: '20px' }}>
-          <p><strong>Display Name:</strong> {profileData?.display_name || 'Not provided'}</p>
           <p><strong>Business Email:</strong> {profileData?.business_email || 'Not provided'}</p>
           <p><strong>Phone:</strong> {profileData?.phone || 'Not provided'}</p>
           {profileData?.business_address && (
@@ -172,7 +171,7 @@ export default function Profile() {
             borderRadius: '5px',
             border: '1px solid #ffeaa7'
           }}>
-            <p>Unable to load posts: User ID not found in profile data.</p>
+            <p>Unable to load posts!</p>
           </div>
         )}
       </section>
