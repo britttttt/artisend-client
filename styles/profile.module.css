@@ -1,0 +1,28 @@
+.profileBannerContainer {
+  position: relative;
+  margin-bottom: 60px;
+}
+
+.profileBanner {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.profileAvatar {
+  position: absolute;
+  bottom: -50px;
+  left: 20px;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profileUsername {
+  margin-left: 20px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}

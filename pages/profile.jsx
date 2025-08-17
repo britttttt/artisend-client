@@ -1,23 +1,24 @@
+import styles from "../styles/profile.module.css"
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/state";
-import { getUserProfile } from "../data/auth";
 import UserPosts from "../components/user-posts";
 import Layout from "../components/layout";
 import Navbar from "../components/navbar";
 import { getBusinessSkillsByUserId } from "../data/skills-mediums";
-
+import { getUserProfile, getBusinessSkills, getBusinessMediums, getUserAccount } from "../data/auth";
 export default function Profile() {
   const { profile, setProfile, token, loadingProfile } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [userAccount, setUserAccount] = useState(null);
 
   const fetchProfile = async () => {
     setLoading(true);
     setError(null);
     try {
       const profileData = await getUserProfile();
-      
-      
+
+
       if (profileData) {
         const normalizedProfile = Array.isArray(profileData) ? profileData[0] : profileData;
         console.log('Fetched fresh profile from API:', normalizedProfile);
@@ -33,7 +34,19 @@ export default function Profile() {
       setLoading(false);
     }
   };
-  
+
+  const fetchUserAccount = async () => {
+    if (!token) return;
+
+    try {
+      const userData = await getUserAccount(token)
+      setUserAccount(userData)
+    } catch (err) {
+      console.error('Failed user account fetch')
+    }
+  }
+
+  fetchUserAccount()
 
   useEffect(() => {
     if (token) {
@@ -101,28 +114,44 @@ export default function Profile() {
     <div>
 
       <section>
-        
-        
-        {profileData?.banner_img && (
-          <img
-          src={profileData.banner_img}
-          alt={`${profileData.display_name} banner`}
-          style={{ 
-            width: '100%', 
-            maxHeight: '500px', 
-            objectFit: 'cover',
-            marginBottom: '20px',
-            borderRadius: '8px'
-          }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-            />
-          )}
-          
 
-          <h2>About</h2>
-          <h3>{profileData?.display_name || profileData?.name || 'User'}</h3>
+<div className={styles.profileBannerContainer}>
+  {/* Banner Image */}
+  {profileData?.banner_img && (
+    <img
+      src={profileData.banner_img}
+      alt={`${profileData.display_name} banner`}
+      className={styles.profileBanner}
+      onError={(e) => {
+        e.target.style.display = 'none';
+      }}
+    />
+  )}
+  
+
+  {userAccount?.profile_pic && (
+    <img
+      src={userAccount.profile_pic}
+      alt={`${userAccount.username} avatar`}
+     className={styles.profileAvatar}
+      onError={(e) => {
+        e.target.style.display = 'none';
+      }}
+    />
+  )}
+</div>
+
+
+{userAccount && (
+  <p className="profile-username">
+    {userAccount.first_name} {userAccount.last_name} ({userAccount.username})
+  </p>
+)}
+
+
+
+        <h2>About</h2>
+        <h3>{profileData?.display_name || profileData?.name || 'User'}</h3>
         <div style={{ marginBottom: '20px' }}>
           <p><strong>Business Email:</strong> {profileData?.business_email || 'Not provided'}</p>
           <p><strong>Phone:</strong> {profileData?.phone || 'Not provided'}</p>
@@ -132,13 +161,13 @@ export default function Profile() {
           <p><strong>Bio:</strong> {profileData?.bio || 'No bio available'}</p>
           <p><strong>Commissions:</strong> {profileData?.commissions_open ? 'Open' : 'Closed'}</p>
 
-          
+
           {socialLink && (
             <p>
               <strong>Social Link:</strong>{" "}
-              <a 
-                href={socialLink} 
-                target="_blank" 
+              <a
+                href={socialLink}
+                target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#007bff', textDecoration: 'underline' }}
               >
@@ -146,11 +175,11 @@ export default function Profile() {
               </a>
             </p>
           )}
-          
+
           {profileData?.mediums && profileData.mediums.length > 0 && (
             <p><strong>Mediums:</strong> {profileData.mediums.join(', ')}</p>
           )}
-          
+
           {profileData?.skills && profileData.skills.length > 0 && (
             <p><strong>Skills:</strong> {profileData.skills.join(', ')}</p>
           )}
@@ -158,16 +187,16 @@ export default function Profile() {
       </section>
 
 
-     
+
       {/* Posts section */}
       <section style={{ marginTop: '30px' }}>
         <h3>Recent Posts</h3>
         {profileData?.user ? (
           <UserPosts userId={profileData.user} token={token} />
         ) : (
-          <div style={{ 
-            background: '#fff3cd', 
-            padding: '15px', 
+          <div style={{
+            background: '#fff3cd',
+            padding: '15px',
             borderRadius: '5px',
             border: '1px solid #ffeaa7'
           }}>
