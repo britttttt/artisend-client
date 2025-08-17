@@ -74,7 +74,7 @@ export default function Profile() {
     return (
       <div>
         <h1>Profile</h1>
-        <p>You must be logged in to view this page.</p>
+        <p>You must be logged in and cool to view this page.</p>
         <p><a href="/login">Click here to log in</a></p>
       </div>
     );
