@@ -9,7 +9,7 @@
   --offWhite: #f2f2f3;
   --dark: #3b3b3b;
   --outline: #c3c0c0;
-  --appBackground: #dddade;
+  --appBackground: #d3beb2;
 }
 
 body,
@@ -23,6 +23,8 @@ textarea {
 body {
   background-color: var(--appBackground);
   margin: 1em;
+  padding-top: 60px; 
+
 }
 
 h1, h2, h3, h4, h5, h6 {

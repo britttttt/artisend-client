@@ -93,8 +93,23 @@ export default function BusinessProfile() {
     formData.append('phone', phone.current?.value || '');
     formData.append('business_address', businessAddress.current?.value || '');
     formData.append('social_link', socialLink.current?.value || '');
+    
+    // Debug banner image upload
     if (bannerImg) {
+      console.log('Banner image to upload:', {
+        name: bannerImg.name,
+        size: bannerImg.size,
+        type: bannerImg.type
+      });
       formData.append('banner_img', bannerImg);
+    } else {
+      console.log('No banner image selected');
+    }
+
+    // Debug FormData contents
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
     }
 
     if (!token) {
@@ -229,21 +244,50 @@ export default function BusinessProfile() {
           <Textarea id="bio" refEl={bio} label="Bio" />
 
           {/* Show current banner if editing */}
-          {isEditing && profileData.banner_img && (
-            <div className="field">
-              <label className="label">Current Banner Image</label>
-              <figure className="image is-16by9" style={{ maxWidth: '300px' }}>
-                <img src={profileData.banner_img} alt="Current banner" />
-              </figure>
-            </div>
-          )}
+{isEditing && profileData.banner_img && (
+  <div className="field">
+    <label className="label">Current Banner Image</label>
+    <figure className="image" style={{ maxWidth: '200px' }}>
+      <img 
+        src={profileData.banner_img} 
+        alt="Current banner"
+        style={{ 
+          width: '100%', 
+          height: 'auto',
+          borderRadius: '8px'
+        }}
+      />
+    </figure>
+  </div>
+)}
 
-          <Input
-            type="file"
-            accept="image/*"
-            label={isEditing ? "Upload New Banner Image (optional)" : "Upload Banner Image"}
-            onChange={(e) => setBannerImg(e.target.files[0])}
-          />
+<div className="field">
+  <label className="label">
+    {isEditing ? "Upload New Banner Image (optional)" : "Upload Banner Image"}
+  </label>
+  <div className="control">
+    <input
+      className="input"
+      type="file"
+      accept="image/*"
+      onChange={(e) => {
+        const file = e.target.files[0];
+        console.log('File selected:', file);
+        setBannerImg(file);
+      }}
+    />
+  </div>
+  {bannerImg && (
+    <div style={{ marginTop: "10px" }}>
+      <p>Selected: {bannerImg.name}</p>
+      <img
+        src={URL.createObjectURL(bannerImg)}
+        alt="Banner preview"
+        style={{ maxWidth: "150px", borderRadius: "8px" }}
+      />
+    </div>
+  )}
+</div>
 
           <label className="label">Select Mediums</label>
           <select onChange={handleMediumChange}>

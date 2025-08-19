@@ -1,0 +1,30 @@
+.fabButton {
+  border-radius: 100%;
+  object-fit: cover;
+  width: 7em;
+  height: 7em;
+  position: fixed;
+  bottom: 5em;
+  right: 5em; 
+  background-color: #ca7046;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  color:white;
+}
+
+.fabButton:hover {
+  background-color: #a85934;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  color:white;
+}
+
+.box:hover{
+  transform: scale(1.03);
+  transition: all 0.3s ease;
+}
+
+.postPhoto:hover{
+  transform: scale(1.7);
+   transition: all 0.5s ease;
+}

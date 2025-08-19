@@ -8,6 +8,7 @@ export default function Layout({ children }) {
         <Head>
           <title>Artisend</title>
         </Head>
+        
         <main className="container mt-6">{children}</main>
       </>
     </AppWrapper>
