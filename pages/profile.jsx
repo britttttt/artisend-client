@@ -1,35 +1,34 @@
-import styles from "../styles/profile.module.css"
+import styles from "../styles/profile.module.css";
 import { useState, useEffect } from "react";
 import { useAppContext } from "../context/state";
 import UserPosts from "../components/user-posts";
 import Layout from "../components/layout";
 import Navbar from "../components/navbar";
-import { getBusinessSkillsByUserId } from "../data/skills-mediums";
-import { getUserProfile, getBusinessSkills, getBusinessMediums, getUserAccount } from "../data/auth";
+import { getUserProfile, getUserAccount } from "../data/auth";
+
 export default function Profile() {
   const { profile, setProfile, token, loadingProfile } = useAppContext();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userAccount, setUserAccount] = useState(null);
+  const [activeTab, setActiveTab] = useState("about");
 
   const fetchProfile = async () => {
     setLoading(true);
     setError(null);
     try {
       const profileData = await getUserProfile();
-
-
       if (profileData) {
-        const normalizedProfile = Array.isArray(profileData) ? profileData[0] : profileData;
-        console.log('Fetched fresh profile from API:', normalizedProfile);
+        const normalizedProfile = Array.isArray(profileData)
+          ? profileData[0]
+          : profileData;
+        console.log("Fetched fresh profile from API:", normalizedProfile);
         setProfile(normalizedProfile);
-        // Save to localStorage immediately after successful fetch
-        localStorage.setItem('userProfile', JSON.stringify(normalizedProfile));
+        localStorage.setItem("userProfile", JSON.stringify(normalizedProfile));
       }
     } catch (err) {
       console.error("Profile fetch error:", err);
       setError("Could not fetch profile: " + err.message);
-      // Don't clear localStorage on fetch error - keep the cached version
     } finally {
       setLoading(false);
     }
@@ -37,173 +36,191 @@ export default function Profile() {
 
   const fetchUserAccount = async () => {
     if (!token) return;
-
     try {
-      const userData = await getUserAccount(token)
-      setUserAccount(userData)
+      const userData = await getUserAccount(token);
+      setUserAccount(userData);
     } catch (err) {
-      console.error('Failed user account fetch')
+      console.error("Failed user account fetch", err);
     }
-  }
-
-  fetchUserAccount()
+  };
 
   useEffect(() => {
-    if (token) {
-      if (profile) {
-        // Ensure we're saving the normalized object, not an array
-        const profileToSave = Array.isArray(profile) ? profile[0] : profile;
-        localStorage.setItem('userProfile', JSON.stringify(profileToSave));
-      } else {
-        // Try to restore from localStorage first
-        const savedProfile = localStorage.getItem('userProfile');
-        if (savedProfile) {
-          try {
-            const parsedProfile = JSON.parse(savedProfile);
-            // Ensure we always set a normalized object, not an array
-            const normalizedProfile = Array.isArray(parsedProfile) ? parsedProfile[0] : parsedProfile;
-            console.log('Restored profile from localStorage:', normalizedProfile);
-            setProfile(normalizedProfile);
-          } catch (e) {
-            console.error('Failed to parse saved profile:', e);
-            localStorage.removeItem('userProfile'); // Clean up corrupted data
-            fetchProfile();
-          }
-        } else {
-          console.log('No saved profile found, fetching from API');
+    if (token) fetchUserAccount();
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    if (profile) {
+      const profileToSave = Array.isArray(profile) ? profile[0] : profile;
+      localStorage.setItem("userProfile", JSON.stringify(profileToSave));
+    } else {
+      const savedProfile = localStorage.getItem("userProfile");
+      if (savedProfile) {
+        try {
+          const parsedProfile = JSON.parse(savedProfile);
+          const normalizedProfile = Array.isArray(parsedProfile)
+            ? parsedProfile[0]
+            : parsedProfile;
+          console.log("Restored profile from localStorage:", normalizedProfile);
+          setProfile(normalizedProfile);
+        } catch (e) {
+          console.error("Failed to parse saved profile:", e);
+          localStorage.removeItem("userProfile");
           fetchProfile();
         }
+      } else {
+        console.log("No saved profile found, fetching from API");
+        fetchProfile();
       }
     }
   }, [token, profile]);
 
-  // Show loading state from context
-  if (loadingProfile) {
-    return <p>Loading user session...</p>;
-  }
+  if (loadingProfile) return <p>Loading user session...</p>;
 
-  // Show if no token
   if (!token) {
     return (
       <div>
         <h1>Profile</h1>
         <p>You must be logged in and cool to view this page.</p>
-        <p><a href="/login">Click here to log in</a></p>
+        <p>
+          <a href="/login">Click here to login</a>
+        </p>
       </div>
     );
   }
 
   if (loading) return <p>Loading profile data...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (!profile) return <p>No profile data available.</p>;
 
-  if (!profile) {
-    return <p>No profile data available.</p>;
-  }
-
-  // Handle both array and object formats
   const profileData = Array.isArray(profile) ? profile[0] : profile;
 
   const formatSocialLink = (link) => {
     if (!link) return null;
-    return link.startsWith('http') ? link : `https://${link}`;
+    return link.startsWith("http") ? link : `https://${link}`;
   };
 
   const socialLink = formatSocialLink(profileData?.social_link);
 
   return (
     <div>
+      <div className={styles.profileBannerContainer}>
+        {profileData?.banner_img && (
+          <img
+            src={profileData.banner_img}
+            alt={`${profileData.display_name} banner`}
+            className={styles.profileBanner}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+        )}
 
-      <section>
+        {userAccount?.profile_pic && (
+          <img
+            src={userAccount.profile_pic}
+            alt={`${userAccount.username} avatar`}
+            className={styles.profileAvatar}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
+          />
+        )}
+      </div>
 
-<div className={styles.profileBannerContainer}>
-  {/* Banner Image */}
-  {profileData?.banner_img && (
-    <img
-      src={profileData.banner_img}
-      alt={`${profileData.display_name} banner`}
-      className={styles.profileBanner}
-      onError={(e) => {
-        e.target.style.display = 'none';
-      }}
-    />
-  )}
-  
+      {/* Tab Navigation */}
+      <div className={styles.tabContainer}>
+        {["about", "posts", "portfolio"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`${styles.tabButton} ${
+              activeTab === tab ? styles.activeTab : ""
+            }`}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
+      </div>
 
-  {userAccount?.profile_pic && (
-    <img
-      src={userAccount.profile_pic}
-      alt={`${userAccount.username} avatar`}
-     className={styles.profileAvatar}
-      onError={(e) => {
-        e.target.style.display = 'none';
-      }}
-    />
-  )}
-</div>
-
-
-{userAccount && (
-  <p className="profile-username">
-    {userAccount.first_name} {userAccount.last_name} ({userAccount.username})
-  </p>
-)}
-
-
-
-        <h2>About</h2>
-        <h3>{profileData?.display_name || profileData?.name || 'User'}</h3>
-        <div style={{ marginBottom: '20px' }}>
-          <p><strong>Business Email:</strong> {profileData?.business_email || 'Not provided'}</p>
-          <p><strong>Phone:</strong> {profileData?.phone || 'Not provided'}</p>
-          {profileData?.business_address && (
-            <p><strong>Address:</strong> {profileData.business_address}</p>
-          )}
-          <p><strong>Bio:</strong> {profileData?.bio || 'No bio available'}</p>
-          <p><strong>Commissions:</strong> {profileData?.commissions_open ? 'Open' : 'Closed'}</p>
-
-
-          {socialLink && (
+      {/* Tab Content */}
+      <div className={styles.tabContent}>
+        {activeTab === "about" && (
+          <div>
+            <h3>{profileData?.display_name || profileData?.name || "User"}</h3>
             <p>
-              <strong>Social Link:</strong>{" "}
-              <a
-                href={socialLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#007bff', textDecoration: 'underline' }}
-              >
-                {profileData.social_link}
-              </a>
+              <strong>Business Email:</strong>{" "}
+              {profileData?.business_email || "Not provided"}
             </p>
-          )}
+            <p>
+              <strong>Phone:</strong>{" "}
+              {profileData?.phone || "Not provided"}
+            </p>
+            {profileData?.business_address && (
+              <p>
+                <strong>Address:</strong> {profileData.business_address}
+              </p>
+            )}
+            <p>
+              <strong>Bio:</strong>{" "}
+              {profileData?.bio || "No bio available"}
+            </p>
+            <p>
+              <strong>Commissions:</strong>{" "}
+              {profileData?.commissions_open ? "Open" : "Closed"}
+            </p>
 
-          {profileData?.mediums && profileData.mediums.length > 0 && (
-            <p><strong>Mediums:</strong> {profileData.mediums.join(', ')}</p>
-          )}
+            {socialLink && (
+              <p>
+                <strong>Social Link:</strong>{" "}
+                <a
+                  href={socialLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                >
+                  {profileData.social_link}
+                </a>
+              </p>
+            )}
 
-          {profileData?.skills && profileData.skills.length > 0 && (
-            <p><strong>Skills:</strong> {profileData.skills.join(', ')}</p>
-          )}
-        </div>
-      </section>
+            {profileData?.mediums?.length > 0 && (
+              <p>
+                <strong>Mediums:</strong>{" "}
+                {profileData.mediums.join(", ")}
+              </p>
+            )}
 
-
-
-      {/* Posts section */}
-      <section style={{ marginTop: '30px' }}>
-        <h3>Recent Posts</h3>
-        {profileData?.user ? (
-          <UserPosts userId={profileData.user} token={token} />
-        ) : (
-          <div style={{
-            background: '#fff3cd',
-            padding: '15px',
-            borderRadius: '5px',
-            border: '1px solid #ffeaa7'
-          }}>
-            <p>Unable to load posts!</p>
+            {profileData?.skills?.length > 0 && (
+              <p>
+                <strong>Skills:</strong>{" "}
+                {profileData.skills.join(", ")}
+              </p>
+            )}
           </div>
         )}
-      </section>
+
+        {activeTab === "posts" && (
+          <div>
+            {profileData?.user ? (
+              <UserPosts userId={profileData.user} token={token} />
+            ) : (
+              <div className={styles.warningBox}>
+                <p>Unable to load posts!</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === "portfolio" && (
+          <div>
+            <p className={styles.portfolioComingSoon}>
+              Portfolio coming soon...
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

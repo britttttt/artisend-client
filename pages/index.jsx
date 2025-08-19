@@ -1,10 +1,12 @@
 import Link from "next/link";
 import NearbyPosts from "./posts";
 import { useAppContext } from "../context/state";
-
+import styles from "../styles/posts.module.css"
+import { useState } from "react";
 
 export default function Home() {
-  const { token } = useAppContext(); // get the current user token
+  const { token } = useAppContext();
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
     <div>
@@ -13,10 +15,16 @@ export default function Home() {
       </div>
 
       {token && (
-        <div>
+        <div  >
           <Link href="/newPost">
-            <button>
-              Create Post
+            <button className={styles.fabButton}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}>
+              {isHovered ? (
+                <span>Create Post</span>
+              ) : (
+                <strong style={{ fontSize: '2em' }}>+</strong>
+              )}
             </button>
           </Link>
         </div>

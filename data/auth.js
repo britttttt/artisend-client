@@ -118,3 +118,12 @@ export const getBusinessProfileByUserId = (userId, token) => {
     }
   });
 };
+
+export const getUserAccountById = (userId, token) => {
+  return fetchWithResponse(`user/${userId}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Token ${token}`,
+    }
+  });
+};

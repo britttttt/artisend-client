@@ -11,6 +11,7 @@ export default function Register() {
   const { setToken } = useAppContext()
   const [isBusiness, setIsBusiness] = useState(false)
   const [avatar, setAvatar] = useState(null)
+  const [activeTab, setActiveTab] = useState('about')
 
   const firstName = useRef(null)
   const lastName = useRef(null)

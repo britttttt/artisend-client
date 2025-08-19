@@ -1,6 +1,6 @@
 /* Navbar Styles */
 .navbar {
-  background-color: #cc6141;
+  background-color: #ca7046;
   padding: 0 2rem;
   margin-bottom: 1rem;
   position: fixed;
@@ -14,6 +14,10 @@
   min-height: 3.25rem;
 }
 
+.navbar + * {
+  margin-top: 3.25rem;
+}
+
 .navbarBrand {
   display: flex;
   align-items: center;
@@ -25,10 +29,38 @@
   color: #363636;
   text-decoration: none;
   font-size: 1.25rem;
+   display: inline-block;
 }
 
 .brandLink:hover {
-  color: #3273dc;
+  color: #9c5525;
+  transform: scale(1.1);
+}
+
+/* Simple scale hover effect */
+.brandLink img {
+  transition: transform 0.2s ease;
+}
+
+.brandLink:hover img {
+  transform: scale(1.1);
+}
+
+.brandLink:hover img {
+  opacity: 0.8;
+}
+
+.brandLink img {
+  transition: all 0.3s ease;
+}
+
+.brandLink:hover img {
+  transform: scale(1.05);
+}
+
+
+.brandLink:hover img {
+  background-color:  #9c5525;
 }
 
 /* Buttons */

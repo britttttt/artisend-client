@@ -2,18 +2,42 @@ import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 import { useAppContext } from '../context/state'
 import styles from '../styles/navbar.module.css'
+import Image from 'next/image'
+import { getUserAccount } from '../data/auth'
 
 export default function Navbar() {
   const { token, profile } = useAppContext()
   const hamburger = useRef()
   const navbar = useRef()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [userAccount, setUserAccount] = useState(null)
+
 
   useEffect(() => {
     if (token) {
       setIsLoggedIn(true)
     }
   }, [token])
+
+
+useEffect(() => {
+  const fetchUserAccount = async () => {
+    if (!token) return;
+
+    try {
+      const userData = await getUserAccount(token)
+      setUserAccount(userData)
+    } catch (err) {
+      console.error('Failed user account fetch')
+    }
+  }
+
+  if (token) {
+    fetchUserAccount()
+  }
+}, [token])
+
+
 
   const showMobileNavbar = () => {
     hamburger.current.classList.toggle(styles.hamburgerActive)
@@ -24,18 +48,23 @@ export default function Navbar() {
     return (
       <div className={styles.navbarDropdownWrapper}>
         <a className={styles.navbarUserLink}>
-          {profile?.avatar || profile?.profile_image ? (
+          {userAccount?.profile_pic || profile?.profile_image ? (
             <img
-              src={profile.avatar || profile.profile_image}
-              alt={profile.display_name || "User"}
-              className={styles.userAvatar}
+              src={userAccount.profile_pic}
+              alt={`${userAccount.username} avatar`}
+              className={styles.profileAvatar}
+              width={50}
+              height={50}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
             />
           ) : (
             <span className={styles.userIcon}>
               <i className="fas fa-user-circle"></i>
             </span>
           )}
-          <span>{profile?.display_name || profile?.username || "User"}</span>
+          <span>{ userAccount?.username || profile?.username || "User"}</span>
         </a>
         <div className={styles.navbarDropdown}>
           <Link href="/profile" className={styles.dropdownItem}>
@@ -80,7 +109,12 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.navbarBrand}>
         <Link href="/" className={styles.brandLink}>
-         Home
+          <img
+            src="/images/artisend-logo-crop.png"
+            alt="Artisend Logo"
+            width={200}
+            height={60}
+          />
         </Link>
 
 
