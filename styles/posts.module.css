@@ -1,3 +1,4 @@
+
 .fabButton {
   border-radius: 100%;
   object-fit: cover;
@@ -9,22 +10,206 @@
   background-color: #ca7046;
   transition: all 0.3s ease;
   cursor: pointer;
-  color:white;
+  color: white;
+  z-index: 1;
 }
 
 .fabButton:hover {
   background-color: #a85934;
   transform: scale(1.1);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  color:white;
+  color: white;
 }
 
-.box:hover{
+.box:hover {
   transform: scale(1.03);
   transition: all 0.3s ease;
 }
 
-.postPhoto:hover{
+.postPhoto:hover {
   transform: scale(1.7);
-   transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.postCard {
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 52em;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.userHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background-color: antiquewhite;
+  flex-direction: row;
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+}
+
+.profilePic {
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.postDate {
+  color: #666;
+  font-size: 14px;
+}
+
+.postContent {
+  cursor: pointer;
+  padding: 1em;
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+}
+
+.postTitle {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.mediaContainer {
+  margin-bottom: 15px;
+}
+
+.noMediaPlaceholder {
+  height: 100px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-radius: 8px;
+}
+
+.mediaPreview {
+  position: relative;
+}
+
+.mediaImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.mediaVideoPlaceholder {
+  width: 100%;
+  height: 100px;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+}
+
+.mediaAudioPlaceholder {
+  width: 100%;
+  height: 100px;
+  background-color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+}
+
+.mediaPlaceholderContent {
+  text-align: center;
+}
+
+.mediaIcon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.mediaLabel {
+  font-size: 12px;
+}
+
+.mediaCountBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.mediaTypeIndicators {
+  position: absolute;
+  bottom: 10px;
+  left: 8px;
+  display: flex;
+  gap: 2px;
+}
+
+.mediaTypeIcon {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+}
+
+.contentPreview {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.loadingMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin: 1rem;
+}
+
+.noPostsMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
 }
