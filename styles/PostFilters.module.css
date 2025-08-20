@@ -1,0 +1,279 @@
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.filterBar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  flex-wrap: wrap;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.filterSelect {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 120px;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #ca7046;
+  box-shadow: 0 0 0 2px rgba(202, 112, 70, 0.2);
+}
+
+.filterSelect:hover {
+  border-color: #ca7046;
+}
+
+.dateInput {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+  transition: border-color 0.2s ease;
+  min-width: 130px;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: #ca7046;
+  box-shadow: 0 0 0 2px rgba(202, 112, 70, 0.2);
+}
+
+.dateInput:hover {
+  border-color: #ca7046;
+}
+
+.clearButton {
+  padding: 6px 12px;
+  background-color: transparent;
+  color: #ca7046;
+  border: 1px solid #ca7046;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.clearButton:hover {
+  background-color: #ca7046;
+  color: white;
+}
+
+.clearButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(202, 112, 70, 0.2);
+}
+
+.title {
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.postCard {
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 52em;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.userHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background-color: antiquewhite;
+  flex-direction: row;
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+}
+
+.profilePic {
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.postDate {
+  color: #666;
+  font-size: 14px;
+}
+
+.postContent {
+  cursor: pointer;
+  padding: 1em;
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+}
+
+.postTitle {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.mediaContainer {
+  margin-bottom: 15px;
+}
+
+.noMediaPlaceholder {
+  height: 100px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-radius: 8px;
+}
+
+.mediaPreview {
+  position: relative;
+}
+
+.mediaImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.mediaVideoPlaceholder {
+  width: 100%;
+  height: 100px;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+}
+
+.mediaAudioPlaceholder {
+  width: 100%;
+  height: 100px;
+  background-color: #4a5568;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: white;
+}
+
+.mediaPlaceholderContent {
+  text-align: center;
+}
+
+.mediaIcon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.mediaLabel {
+  font-size: 12px;
+}
+
+.mediaCountBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.mediaTypeIndicators {
+  position: absolute;
+  bottom: 10px;
+  left: 8px;
+  display: flex;
+  gap: 2px;
+}
+
+.mediaTypeIcon {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+}
+
+.contentPreview {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.loadingMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin: 1rem;
+}
+
+.noPostsMessage {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}

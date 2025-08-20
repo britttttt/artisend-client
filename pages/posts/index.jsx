@@ -3,11 +3,14 @@ import { useRouter } from 'next/router';
 import { useAppContext } from '../../context/state';
 import { getBusinessProfileByUserId, getUserAccountById } from '../../data/auth';
 import styles from "/styles/posts.module.css"
+import PostFilter from '../../components/filterbar/filterbar';
+
 
 export default function NearbyPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filteredPosts, setFilteredPosts] = useState([])
 
   const { token } = useAppContext();
   const router = useRouter();
@@ -29,6 +32,7 @@ export default function NearbyPosts() {
         const data = await res.json();
         const postsArray = Array.isArray(data) ? data : data.results || [];
         setPosts(postsArray);
+        setFilteredPosts(postsArray);
 
       } catch (err) {
         console.error(err);
@@ -40,6 +44,10 @@ export default function NearbyPosts() {
 
     fetchNearbyPosts();
   }, [token]);
+
+  const handleFilteredPostsChange = (newFilteredPosts) => {
+    setFilteredPosts(newFilteredPosts);
+  };
 
   const goToPost = (id) => router.push(`/posts/${id}`);
 
@@ -58,13 +66,13 @@ export default function NearbyPosts() {
     return (
       <div className={styles.mediaPreview}>
         {primaryMedia.media_type === 'image' && (
-          <img 
+          <img
             src={primaryMedia.file}
             alt="Post media"
             className={styles.mediaImage}
           />
         )}
-        
+
         {primaryMedia.media_type === 'video' && (
           <div className={styles.mediaVideoPlaceholder}>
             <div className={styles.mediaPlaceholderContent}>
@@ -73,7 +81,7 @@ export default function NearbyPosts() {
             </div>
           </div>
         )}
-        
+
         {primaryMedia.media_type === 'audio' && (
           <div className={styles.mediaAudioPlaceholder}>
             <div className={styles.mediaPlaceholderContent}>
@@ -111,57 +119,85 @@ export default function NearbyPosts() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Posts in Your Area</h1>
-      {posts.map(post => {
-        return (
-          <div
-            key={post.id}
-            className={`${styles.box} ${styles.postCard}`}
-            onClick={() => goToPost(post.id)}
-          >
-            {/* User info header */}
-            <div className={styles.userHeader}>
-              {post.user_profile?.profile_pic && (
-                <img
-                  src={post.user_profile.profile_pic}
-                  alt={post.user_profile.username || 'User'}
-                  width={50}
-                  height={50}
-                  className={styles.profilePic}
-                />
-              )}
-              <div className={styles.userInfo}>
-                <h4 className={styles.userName}>
-                  {post.user_business?.display_name || 'Unknown User'}
-                </h4>
-                {post.created_at && (
-                  <div className={styles.postDate}>
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </div>
+      {posts.length > 0 && (
+        <PostFilter
+          posts={posts}
+          onFilteredPostsChange={handleFilteredPostsChange}
+          initialCollapsed={false}
+        />
+      )}
+
+
+      {filteredPosts.length === 0 ? (
+        <p className={styles.noPostsMessage}>
+          {posts.length === 0 ? "No posts found nearby." : "No posts match your current filters."}
+        </p>
+      ) : (
+        filteredPosts.map(post => {
+          return (
+            <div
+              key={post.id}
+              className={`${styles.box} ${styles.postCard}`}
+              onClick={() => goToPost(post.id)}
+            >
+              
+              <div className={styles.userHeader}>
+                {post.user_profile?.profile_pic && (
+                  <img
+                    src={post.user_profile.profile_pic}
+                    alt={post.user_profile.username || 'User'}
+                    width={50}
+                    height={50}
+                    className={styles.profilePic}
+                  />
+                )}
+                <div className={styles.userInfo}>
+                  <h4 className={styles.userName}>
+                    {post.user_business?.display_name || 'Unknown User'}
+                  </h4>
+                  {post.created_at && (
+                    <div className={styles.postDate}>
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+
+              <div className={styles.postContent}>
+                <h3 className={styles.postTitle}>{post.title}</h3>
+                
+
+                <div className={styles.mediaContainer}>
+                  {renderMediaPreview(post.media)}
+                </div>
+
+                {post.content && (
+                  <p className={styles.contentPreview}>
+                    {post.content.length > 150 
+                      ? `${post.content.substring(0, 150)}...` 
+                      : post.content
+                    }
+                  </p>
                 )}
               </div>
-            </div>
-
-            <div className={styles.postContent}>
-              <h3 className={styles.postTitle}>{post.title}</h3>
               
-
-              <div className={styles.mediaContainer}>
-                {renderMediaPreview(post.media)}
-              </div>
-
-
-              {post.content && (
-                <p className={styles.contentPreview}>
-                  {post.content.length > 150 
-                    ? `${post.content.substring(0, 150)}...` 
-                    : post.content
-                  }
-                </p>
-              )}
             </div>
-          </div>
-        );
-      })}
+            
+          );
+        })
+      )}
+      {posts.length > 0 && (
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '20px',
+          color: '#666',
+          fontSize: '14px'
+        }}>
+          Showing {filteredPosts.length} of {posts.length} posts
+        </div>
+      )}
     </div>
+    
   );
 }
