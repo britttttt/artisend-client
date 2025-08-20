@@ -14,6 +14,7 @@ export default function PostDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
 
   const profileData = Array.isArray(profile) ? profile[0] : profile;
 
@@ -43,6 +44,231 @@ export default function PostDetail() {
       fetchPost();
     }
   }, [id, token]);
+
+  const getMediaItems = (post) => {
+    if (post.media && post.media.length > 0) {
+      return post.media.sort((a, b) => a.order - b.order);
+    }
+    
+
+    if (post.photo) {
+      return [{
+        file: post.photo,
+        media_type: 'image',
+        order: 0
+      }];
+    }
+    
+    return [];
+  };
+
+
+  const renderMediaItem = (mediaItem, index) => {
+    const { file, media_type } = mediaItem;
+    
+    switch (media_type) {
+      case 'image':
+        return (
+          <img
+            key={index}
+            src={file}
+            alt={`${post.title} - Image ${index + 1}`}
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+        );
+      
+      case 'video':
+        return (
+          <video
+            key={index}
+            controls
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
+          >
+            <source src={file} type="video/mp4" />
+            <source src={file} type="video/webm" />
+            <source src={file} type="video/ogg" />
+            Your browser does not support the video tag.
+          </video>
+        );
+      
+      case 'audio':
+        return (
+          <div key={index} style={{ 
+            padding: '20px', 
+            backgroundColor: '#f8f9fa', 
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '15px',
+              marginBottom: '15px'
+            }}>
+              <div style={{ 
+                fontSize: '24px', 
+                backgroundColor: '#4a5568', 
+                color: 'white',
+                borderRadius: '50%',
+                width: '50px',
+                height: '50px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                🎵
+              </div>
+              <div>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                  Audio File {index + 1}
+                </div>
+                <div style={{ fontSize: '14px', color: '#666' }}>
+                  Click play to listen
+                </div>
+              </div>
+            </div>
+            <audio
+              controls
+              style={{ width: '100%' }}
+            >
+              <source src={file} type="audio/mpeg" />
+              <source src={file} type="audio/wav" />
+              <source src={file} type="audio/ogg" />
+              Your browser does not support the audio tag.
+            </audio>
+          </div>
+        );
+      
+      default:
+        return (
+          <div key={index} style={{ 
+            padding: '20px', 
+            backgroundColor: '#f8f9fa', 
+            borderRadius: '8px',
+            textAlign: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '10px' }}>📎</div>
+            <div>Unknown media type</div>
+            <a 
+              href={file} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ color: '#007bff', textDecoration: 'underline' }}
+            >
+              Download file
+            </a>
+          </div>
+        );
+    }
+  };
+
+
+  const renderMediaGallery = (mediaItems) => {
+    if (mediaItems.length === 0) return null;
+
+    if (mediaItems.length === 1) {
+      return (
+        <div style={{ marginBottom: '20px' }}>
+          {renderMediaItem(mediaItems[0], 0)}
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ marginBottom: '20px' }}>
+
+        <div style={{ marginBottom: '15px' }}>
+          {renderMediaItem(mediaItems[selectedMediaIndex], selectedMediaIndex)}
+        </div>
+
+
+        <div style={{ 
+          display: 'flex', 
+          gap: '10px', 
+          overflowX: 'auto',
+          padding: '10px 0'
+        }}>
+          {mediaItems.map((item, index) => (
+            <div
+              key={index}
+              onClick={() => setSelectedMediaIndex(index)}
+              style={{
+                minWidth: '80px',
+                height: '60px',
+                cursor: 'pointer',
+                border: selectedMediaIndex === index ? '3px solid #007bff' : '2px solid #ddd',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f8f9fa',
+                position: 'relative'
+              }}
+            >
+              {item.media_type === 'image' && (
+                <img
+                  src={item.file}
+                  alt={`Thumbnail ${index + 1}`}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+              
+              {item.media_type === 'video' && (
+                <div style={{ color: '#666', fontSize: '20px' }}>🎥</div>
+              )}
+              
+              {item.media_type === 'audio' && (
+                <div style={{ color: '#666', fontSize: '20px' }}>🎵</div>
+              )}
+
+
+              <div style={{
+                position: 'absolute',
+                bottom: '2px',
+                right: '2px',
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                color: 'white',
+                fontSize: '10px',
+                padding: '2px 4px',
+                borderRadius: '3px'
+              }}>
+                {index + 1}
+              </div>
+            </div>
+          ))}
+        </div>
+
+
+        <div style={{ 
+          textAlign: 'center', 
+          color: '#666', 
+          fontSize: '14px',
+          marginTop: '10px'
+        }}>
+          {selectedMediaIndex + 1} of {mediaItems.length}
+        </div>
+      </div>
+    );
+  };
 
   if (loading) {
     return (
@@ -74,11 +300,13 @@ export default function PostDetail() {
   const currentUserId = profileData?.user || profileData?.user_id || profileData?.id;
   const isOwner = currentUserId && (currentUserId === (post.user_id || post.user));
   const authorName = post.user_business?.display_name || post.user_profile?.username || `User ${post.user}`;
+  const mediaItems = getMediaItems(post);
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', backgroundColor:'white' }}>
       <h1>{post.title}</h1>
       
+
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
         {post.user_profile?.profile_pic && (
           <img
@@ -115,20 +343,23 @@ export default function PostDetail() {
         )}
       </div>
 
-      {post.photo && (
-        <div style={{ marginBottom: '20px' }}>
-          <img
-            src={post.photo}
-            alt={post.title || 'Post image'}
-            style={{
-              maxWidth: '100%',
-              height: 'auto',
-              borderRadius: '8px'
-            }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
+
+      {renderMediaGallery(mediaItems)}
+
+
+      {mediaItems.length > 0 && (
+        <div style={{ 
+          marginBottom: '20px', 
+          padding: '10px', 
+          backgroundColor: '#f8f9fa', 
+          borderRadius: '6px',
+          fontSize: '14px',
+          color: '#666'
+        }}>
+          📎 {mediaItems.length} media file{mediaItems.length !== 1 ? 's' : ''} attached
+          {mediaItems.length > 1 && (
+            <span> - {mediaItems.filter(m => m.media_type === 'image').length} image(s), {mediaItems.filter(m => m.media_type === 'video').length} video(s), {mediaItems.filter(m => m.media_type === 'audio').length} audio file(s)</span>
+          )}
         </div>
       )}
 
@@ -139,7 +370,14 @@ export default function PostDetail() {
         </button>
         {isOwner && (
           <Link href={`/posts/${id}/edit`}>
-            <button style={{ padding: '10px 20px', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+            <button style={{ 
+              padding: '10px 20px', 
+              background: '#007bff', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px', 
+              cursor: 'pointer' 
+            }}>
               Edit Post
             </button>
           </Link>

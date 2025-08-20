@@ -43,47 +43,121 @@ export default function NearbyPosts() {
 
   const goToPost = (id) => router.push(`/posts/${id}`);
 
-  if (loading) return <p>Loading posts...</p>;
-  if (error) return <p>{error}</p>;
-  if (posts.length === 0) return <p>No posts found nearby.</p>;
+  const renderMediaPreview = (mediaItems) => {
+    if (!mediaItems || mediaItems.length === 0) {
+      return (
+        <div className={styles.noMediaPlaceholder}>
+          No media
+        </div>
+      );
+    }
+
+    const primaryMedia = mediaItems[0];
+    const remainingCount = mediaItems.length - 1;
+
+    return (
+      <div className={styles.mediaPreview}>
+        {primaryMedia.media_type === 'image' && (
+          <img 
+            src={primaryMedia.file}
+            alt="Post media"
+            className={styles.mediaImage}
+          />
+        )}
+        
+        {primaryMedia.media_type === 'video' && (
+          <div className={styles.mediaVideoPlaceholder}>
+            <div className={styles.mediaPlaceholderContent}>
+              <div className={styles.mediaIcon}>🎥</div>
+              <div className={styles.mediaLabel}>Video</div>
+            </div>
+          </div>
+        )}
+        
+        {primaryMedia.media_type === 'audio' && (
+          <div className={styles.mediaAudioPlaceholder}>
+            <div className={styles.mediaPlaceholderContent}>
+              <div className={styles.mediaIcon}>🎵</div>
+              <div className={styles.mediaLabel}>Audio</div>
+            </div>
+          </div>
+        )}
+
+        {remainingCount > 0 && (
+          <div className={styles.mediaCountBadge}>
+            +{remainingCount}
+          </div>
+        )}
+
+        {mediaItems.length > 1 && (
+          <div className={styles.mediaTypeIndicators}>
+            {mediaItems.slice(0, 3).map((item, index) => (
+              <div key={index} className={styles.mediaTypeIcon}>
+                {item.media_type === 'image' && '📸'}
+                {item.media_type === 'video' && '🎥'}
+                {item.media_type === 'audio' && '🎵'}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  if (loading) return <p className={styles.loadingMessage}>Loading posts...</p>;
+  if (error) return <p className={styles.errorMessage}>{error}</p>;
+  if (posts.length === 0) return <p className={styles.noPostsMessage}>No posts found nearby.</p>;
 
   return (
-    <div style={{display: 'flex', flexDirection:'column', alignItems:'center'}}>
-      <h1>Posts in Your Area</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Posts in Your Area</h1>
       {posts.map(post => {
-
         return (
           <div
             key={post.id}
-            className={styles.box}
+            className={`${styles.box} ${styles.postCard}`}
             onClick={() => goToPost(post.id)}
-            style={{ cursor: 'pointer', padding:'.5rem', width:'52em', display:'flex', flexDirection:'column'
-             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', backgroundColor:'antiquewhite', flexDirection:'row',}}>
-              {post.user_profile.profile_pic && (
+            {/* User info header */}
+            <div className={styles.userHeader}>
+              {post.user_profile?.profile_pic && (
                 <img
-                src={post.user_profile.profile_pic}
-                alt={post.user_profile.username || 'User'}
-                width={50}
-                height={50}
-                style={{ objectFit: 'cover', padding:'10px' }}
+                  src={post.user_profile.profile_pic}
+                  alt={post.user_profile.username || 'User'}
+                  width={50}
+                  height={50}
+                  className={styles.profilePic}
                 />
               )}
-              <h4>{post.user_business.display_name || 'Unknown User'}</h4>
-              {post.created_at && (
-            <div style={{ color: '#666', fontSize: '14px' }}>
-              {new Date(post.created_at).toLocaleDateString()}
+              <div className={styles.userInfo}>
+                <h4 className={styles.userName}>
+                  {post.user_business?.display_name || 'Unknown User'}
+                </h4>
+                {post.created_at && (
+                  <div className={styles.postDate}>
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-            </div>
-            <div style={{ cursor: 'pointer', padding:'1em', width:'50em', backgroundColor:'white'}} >
 
-              <img src={post.photo}
-                className={styles.postPhoto} 
-                style={{}}
-                height={100}/>
-              <h3>{post.title}</h3>
+            <div className={styles.postContent}>
+              <h3 className={styles.postTitle}>{post.title}</h3>
+              
+
+              <div className={styles.mediaContainer}>
+                {renderMediaPreview(post.media)}
+              </div>
+
+
+              {post.content && (
+                <p className={styles.contentPreview}>
+                  {post.content.length > 150 
+                    ? `${post.content.substring(0, 150)}...` 
+                    : post.content
+                  }
+                </p>
+              )}
             </div>
           </div>
         );
