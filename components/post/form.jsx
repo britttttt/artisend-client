@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useAppContext } from "../../context/state";
 import { createPost, getCategories } from "../../data/auth";
+import styles from "/styles/PostForm.module.css";
 
 export default function PostForm({
   defaultTitle = "",
@@ -26,20 +27,18 @@ export default function PostForm({
   const [mediaFiles, setMediaFiles] = useState([]);
   const [mediaPreviews, setMediaPreviews] = useState([]);
 
-
   useEffect(() => {
     if (profileData?.postalCode) {
       setPostalCode(profileData.postalCode);
     }
   }, [profileData]);
 
-
   useEffect(() => {
     getCategories().then(setCategories).catch(console.error);
   }, []);
+
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-
 
     if (files.length > 5) {
       setError("Maximum 5 files allowed");
@@ -64,13 +63,10 @@ export default function PostForm({
       return;
     }
 
-
-
-    
+    // Clean up previous preview URLs
     mediaPreviews.forEach(preview => {
       if (preview.url) URL.revokeObjectURL(preview.url);
     });
-
 
     const previews = files.map(file => ({
       file,
@@ -84,29 +80,27 @@ export default function PostForm({
     setMediaPreviews(previews);
   };
 
-
   const removeFile = (indexToRemove) => {
-  if (mediaPreviews[indexToRemove]?.url) {
-    URL.revokeObjectURL(mediaPreviews[indexToRemove].url);
-  }
+    if (mediaPreviews[indexToRemove]?.url) {
+      URL.revokeObjectURL(mediaPreviews[indexToRemove].url);
+    }
+
+    const newFiles = mediaFiles.filter((_, index) => index !== indexToRemove);
+    const newPreviews = mediaPreviews.filter((_, index) => index !== indexToRemove);
+    
+    setMediaFiles(newFiles);
+    setMediaPreviews(newPreviews);
+    
+    setError("");
+  };
 
   useEffect(() => {
-  return () => {
-    mediaPreviews.forEach(preview => {
-      if (preview.url) URL.revokeObjectURL(preview.url);
-    });
-  };
-}, []);
-  
-
-  const newFiles = mediaFiles.filter((_, index) => index !== indexToRemove);
-  const newPreviews = mediaPreviews.filter((_, index) => index !== indexToRemove);
-  
-  setMediaFiles(newFiles);
-  setMediaPreviews(newPreviews);
-  
-  setError("");
-};
+    return () => {
+      mediaPreviews.forEach(preview => {
+        if (preview.url) URL.revokeObjectURL(preview.url);
+      });
+    };
+  }, []);
 
   const getCoordinates = async (postalCode) => {
     const res = await fetch(`https://api.zippopotam.us/us/${postalCode}`);
@@ -117,194 +111,160 @@ export default function PostForm({
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!profileData?.id) {
-    setError("You must be logged in to create a post.");
-    return;
-  }
+    if (!profileData?.id) {
+      setError("You must be logged in to create a post.");
+      return;
+    }
 
-  setLoading(true);
-  setError("");
+    setLoading(true);
+    setError("");
 
-  try {
-    // Get coordinates (keep your existing geocoding logic)
-    const coords = await getCoordinates(postalCode);
+    try {
+      // Get coordinates (keep your existing geocoding logic)
+      const coords = await getCoordinates(postalCode);
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("category", categoryId);
-    formData.append("postal_code", postalCode);
-    formData.append("latitude", coords.latitude);
-    formData.append("longitude", coords.longitude);
-    
-    // Append media files with the field name your backend expects
-    mediaFiles.forEach(file => {
-      formData.append("media", file);
-    });
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+      formData.append("category", categoryId);
+      formData.append("postal_code", postalCode);
+      formData.append("latitude", coords.latitude);
+      formData.append("longitude", coords.longitude);
+      
+      // Append media files with the field name your backend expects
+      mediaFiles.forEach(file => {
+        formData.append("media", file);
+      });
 
-    await createPost(formData);
-    
-    // Clean up preview URLs before navigation
-    mediaPreviews.forEach(preview => {
-      if (preview.url) URL.revokeObjectURL(preview.url);
-    });
-    
-    router.push("/posts");
-  } catch (err) {
-    setError(err.message || "Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+      await createPost(formData);
+      
+      // Clean up preview URLs before navigation
+      mediaPreviews.forEach(preview => {
+        if (preview.url) URL.revokeObjectURL(preview.url);
+      });
+      
+      router.push("/posts");
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ maxWidth: "500px", margin: "0 auto" }}
-    >
-      <div>
-        <label>Title:</label>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.inputGroup}>
+        <label className={styles.label}>Title:</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          style={{ width: "100%" }}
+          className={styles.input}
           disabled={loading}
         />
       </div>
 
-      <div>
-        <label>Content:</label>
+      <div className={styles.inputGroup}>
+        <label className={styles.label}>Content:</label>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           required
           rows={4}
-          style={{ width: "100%" }}
+          className={styles.textarea}
           disabled={loading}
         />
       </div>
 
-      <div>
-        <label>Postal Code:</label>
+      <div className={styles.inputGroup}>
+        <label className={styles.label}>Postal Code:</label>
         <input
           type="text"
           value={postalCode}
           onChange={(e) => setPostalCode(e.target.value)}
           required
+          className={styles.input}
           disabled={loading}
         />
       </div>
 
-      <div>
-        <label>Date Posted:</label>
+      <div className={styles.inputGroup}>
+        <label className={styles.label}>Date Posted:</label>
         <input
           type="date"
           value={datePosted}
           onChange={(e) => setDatePosted(e.target.value)}
           required
+          className={styles.input}
           disabled={loading}
         />
       </div>
 
-     <div>
-  <label>Media Files (optional):</label>
-  <input
-    type="file"
-    multiple
-    accept="image/*,video/*,audio/*"
-    onChange={handleFileChange}
-    disabled={loading}
-  />
-  
-  {mediaPreviews.length > 0 && (
-    <div style={{ marginTop: "15px" }}>
-      <p>Selected files ({mediaPreviews.length}/5):</p>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-        {mediaPreviews.map((preview, index) => (
-          <div key={index} style={{ 
-            border: "1px solid #ddd", 
-            borderRadius: "8px", 
-            padding: "10px",
-            maxWidth: "200px"
-          }}>
-            {preview.type === 'image' && preview.url && (
-              <img
-                src={preview.url}
-                alt={`Preview ${index + 1}`}
-                style={{ width: "100%", borderRadius: "4px", marginBottom: "5px" }}
-              />
-            )}
-            
-            {preview.type === 'video' && (
-              <div style={{ 
-                backgroundColor: "#f0f0f0", 
-                padding: "20px", 
-                textAlign: "center",
-                borderRadius: "4px",
-                marginBottom: "5px"
-              }}>
-                🎥 Video
-              </div>
-            )}
-            
-            {preview.type === 'audio' && (
-              <div style={{ 
-                backgroundColor: "#f0f0f0", 
-                padding: "20px", 
-                textAlign: "center",
-                borderRadius: "4px",
-                marginBottom: "5px"
-              }}>
-                🎵 Audio
-              </div>
-            )}
-            
-            <div style={{ fontSize: "12px", color: "#666" }}>
-              <div>{preview.name}</div>
-              <div>{preview.size} MB</div>
+      <div className={styles.inputGroup}>
+        <label className={styles.label}>Media Files (optional):</label>
+        <input
+          type="file"
+          multiple
+          accept="image/*,video/*,audio/*"
+          onChange={handleFileChange}
+          disabled={loading}
+          className={styles.fileInput}
+        />
+        
+        {mediaPreviews.length > 0 && (
+          <div className={styles.previewContainer}>
+            <p className={styles.previewText}>Selected files ({mediaPreviews.length}/5):</p>
+            <div className={styles.previewGrid}>
+              {mediaPreviews.map((preview, index) => (
+                <div key={index} className={styles.previewItem}>
+                  {preview.type === 'image' && preview.url && (
+                    <img
+                      src={preview.url}
+                      alt={`Preview ${index + 1}`}
+                      className={styles.previewImage}
+                    />
+                  )}
+                  
+                  {preview.type === 'video' && (
+                    <div className={styles.previewPlaceholder}>
+                      🎥 Video
+                    </div>
+                  )}
+                  
+                  {preview.type === 'audio' && (
+                    <div className={styles.previewPlaceholder}>
+                      🎵 Audio
+                    </div>
+                  )}
+                  
+                  <div className={styles.fileInfo}>
+                    <div className={styles.fileName}>{preview.name}</div>
+                    <div className={styles.fileSize}>{preview.size} MB</div>
+                  </div>
+                  
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    className={styles.removeButton}
+                    disabled={loading}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
             </div>
-            
-            <button
-              type="button"
-              onClick={() => removeFile(index)}
-              style={{
-                marginTop: "5px",
-                padding: "2px 8px",
-                fontSize: "12px",
-                background: "#ff4444",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer"
-              }}
-              disabled={loading}
-            >
-              Remove
-            </button>
           </div>
-        ))}
+        )}
       </div>
-    </div>
-  )}
-</div>
-      <div>
-        <label>Category:</label>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "10px",
-            marginTop: "5px",
-          }}
-        >
+
+      <div className={styles.inputGroup}>
+        <label className={styles.label}>Category:</label>
+        <div className={styles.categoryGroup}>
           {categories.map((cat) => (
-            <label key={cat.id} style={{ display: "flex", alignItems: "center" }}>
+            <label key={cat.id} className={styles.categoryLabel}>
               <input
                 type="radio"
                 name="category"
@@ -313,6 +273,7 @@ export default function PostForm({
                 onChange={(e) => setCategoryId(e.target.value)}
                 required
                 disabled={loading}
+                className={styles.categoryInput}
               />
               {cat.label}
             </label>
@@ -320,9 +281,9 @@ export default function PostForm({
         </div>
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
 
-      <button type="submit" disabled={loading}>
+      <button type="submit" disabled={loading} className={styles.submitButton}>
         {loading ? "Posting..." : "Create Post"}
       </button>
     </form>

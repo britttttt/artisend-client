@@ -1,0 +1,271 @@
+/* HeroCarousel.module.css */
+.heroContainer {
+  position: relative;
+  width: 100vw;
+  right: 1em;
+  height: 550px;
+  margin-bottom: 30px;
+  overflow: hidden;
+  box-shadow: 0 2px 20px rgba(2, 1, 1, 0.5);
+   background: linear-gradient(transparent, rgba(83, 64, 64, 0.7))
+}
+
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(44, 41, 41, 0.6), rgba(255,255,255,0));
+  z-index: 1;
+  pointer-events: none;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+.slide.active {
+  opacity: 1;
+  transform: scale();
+  transition: transform 0.3s ease;
+}
+
+.photoOverlay {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.836); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+.slideImage {
+  width: 150em;
+  scale: 100%;
+  object-fit: contain;
+  object-position: center center;
+  filter: blur(7px) brightness(1.05) contrast(1.25);
+  background-color: #000;
+  position: relative;
+  z-index: 0;
+  transition: transform 0.6s ease, filter 0.6s ease; /* apply here too */
+}
+
+
+.slideOverlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left:0;
+  color: white;
+  padding: 500px 20px 20px;
+    position: absolute;
+  z-index: 2;
+}
+
+.slideTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+    position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.slideAuthor {
+  font-size: 14px;
+  opacity: 0.5;
+  margin-bottom: 7px;
+}
+
+.slideContent {
+  font-size: 16px;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+/* Navigation arrows */
+.navArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.navArrow:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.navArrow.prev {
+  left: 20px;
+}
+
+.navArrow.next {
+  right: 20px;
+}
+
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  color: #666;
+  font-size: 18px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.emptyStateText {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.emptyStateSubtext {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Click to view post */
+.slideClickable {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.slideClickable:hover .slideImage {
+  transform: scale(1.02);
+  filter: blur(1px) brightness(1.05) contrast(1.25);
+}
+
+/* Responsive design */
+.artisendLogo {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ z-index: 3; /* above overlay and image */
+ opacity: 0.3; /* transparency */
+}
+.artisendLogo img {
+  width: 1000px; /* larger */
+  max-width: 80vw;
+  height: auto;
+}
+
+
+@media (max-width: 768px) {
+  .heroContainer {
+    height: 300px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+
+  .slideTitle {
+    font-size: 20px;
+  }
+
+  .slideContent {
+    font-size: 14px;
+  }
+
+  .slideOverlay {
+    padding: 20px 15px 15px;
+  }
+
+  .navArrow {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .navArrow.prev {
+    left: 10px;
+  }
+
+  .navArrow.next {
+    right: 10px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroContainer {
+    height: 250px;
+    border-radius: 0;
+    margin-bottom: 15px;
+  }
+
+  .slideTitle {
+    font-size: 18px;
+  }
+
+  .slideAuthor {
+    font-size: 12px;
+  }
+
+  .slideContent {
+    font-size: 13px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+}

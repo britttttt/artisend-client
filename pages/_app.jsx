@@ -7,6 +7,7 @@ function MyApp({ Component, pageProps }) {
     <AppWrapper>
       <Navbar/>
       <Component {...pageProps} />
+      <div class="left-rail" aria-hidden="true"></div>
     </AppWrapper>
   )
 }

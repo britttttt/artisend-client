@@ -6,15 +6,17 @@ export default function PostFilter({ posts, onFilteredPostsChange }) {
     const [dateFilter, setDateFilter] = useState('all'); 
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [locationFilter, setLocationFilter] = useState('')
 
     useEffect(() => {
         if (posts.length > 0) {
             applyFilters(sortOrder, dateFilter, startDate, endDate);
         }
-    }, [posts]);
+    }, [posts]); 
 
     const applyFilters = (newSortOrder = sortOrder, newDateFilter = dateFilter, newStartDate = startDate, newEndDate = endDate) => {
         let filteredPosts = [...posts];
+
 
         if (newDateFilter !== 'all') {
             const now = new Date();
@@ -114,20 +116,22 @@ export default function PostFilter({ posts, onFilteredPostsChange }) {
 
     return (
         <div className={styles.filterBar}>
+            <h4>Sort by</h4>
             <div className={styles.filterGroup}>
-                <span className={styles.filterLabel}>Sort by</span>
+                <span className={styles.filterLabel}></span>
                 <select
                     className={styles.filterSelect}
                     value={sortOrder}
                     onChange={handleSortChange}
+                    name="Date Posted"
                 >
-                    <option value="desc">Newest</option>
-                    <option value="asc">Oldest</option>
+                    <option value="desc" selected="selected">Latest</option>
+                    <option value="asc">Oldest First</option>
                 </select>
             </div>
 
             <div className={styles.filterGroup}>
-                <span className={styles.filterLabel}>Posted</span>
+                <span className={styles.filterLabel}></span>
                 <select
                     className={styles.filterSelect}
                     value={dateFilter}

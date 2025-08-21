@@ -37,7 +37,7 @@ export default function PostDetail() {
     } finally {
       setLoading(false);
     }
-  }; 
+  };
 
   useEffect(() => {
     if (id && token) {
@@ -49,7 +49,7 @@ export default function PostDetail() {
     if (post.media && post.media.length > 0) {
       return post.media.sort((a, b) => a.order - b.order);
     }
-    
+
 
     if (post.photo) {
       return [{
@@ -58,14 +58,14 @@ export default function PostDetail() {
         order: 0
       }];
     }
-    
+
     return [];
   };
 
 
   const renderMediaItem = (mediaItem, index) => {
     const { file, media_type } = mediaItem;
-    
+
     switch (media_type) {
       case 'image':
         return (
@@ -84,7 +84,7 @@ export default function PostDetail() {
             }}
           />
         );
-      
+
       case 'video':
         return (
           <video
@@ -103,24 +103,24 @@ export default function PostDetail() {
             Your browser does not support the video tag.
           </video>
         );
-      
+
       case 'audio':
         return (
-          <div key={index} style={{ 
-            padding: '20px', 
-            backgroundColor: '#f8f9fa', 
+          <div key={index} style={{
+            padding: '20px',
+            backgroundColor: '#f8f9fa',
             borderRadius: '8px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
               gap: '15px',
               marginBottom: '15px'
             }}>
-              <div style={{ 
-                fontSize: '24px', 
-                backgroundColor: '#4a5568', 
+              <div style={{
+                fontSize: '24px',
+                backgroundColor: '#4a5568',
                 color: 'white',
                 borderRadius: '50%',
                 width: '50px',
@@ -151,21 +151,21 @@ export default function PostDetail() {
             </audio>
           </div>
         );
-      
+
       default:
         return (
-          <div key={index} style={{ 
-            padding: '20px', 
-            backgroundColor: '#f8f9fa', 
+          <div key={index} style={{
+            padding: '20px',
+            backgroundColor: '#f8f9fa',
             borderRadius: '8px',
             textAlign: 'center',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{ fontSize: '24px', marginBottom: '10px' }}>📎</div>
             <div>Unknown media type</div>
-            <a 
-              href={file} 
-              target="_blank" 
+            <a
+              href={file}
+              target="_blank"
               rel="noopener noreferrer"
               style={{ color: '#007bff', textDecoration: 'underline' }}
             >
@@ -196,9 +196,9 @@ export default function PostDetail() {
         </div>
 
 
-        <div style={{ 
-          display: 'flex', 
-          gap: '10px', 
+        <div style={{
+          display: 'flex',
+          gap: '10px',
           overflowX: 'auto',
           padding: '10px 0'
         }}>
@@ -231,11 +231,11 @@ export default function PostDetail() {
                   }}
                 />
               )}
-              
+
               {item.media_type === 'video' && (
                 <div style={{ color: '#666', fontSize: '20px' }}>🎥</div>
               )}
-              
+
               {item.media_type === 'audio' && (
                 <div style={{ color: '#666', fontSize: '20px' }}>🎵</div>
               )}
@@ -258,9 +258,9 @@ export default function PostDetail() {
         </div>
 
 
-        <div style={{ 
-          textAlign: 'center', 
-          color: '#666', 
+        <div style={{
+          textAlign: 'center',
+          color: '#666',
           fontSize: '14px',
           marginTop: '10px'
         }}>
@@ -303,9 +303,16 @@ export default function PostDetail() {
   const mediaItems = getMediaItems(post);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', backgroundColor:'white' }}>
+    <div
+      style={{
+        padding: '20px',
+        maxWidth: '800px',
+        margin: '40px auto 0', // Adds 40px space at the top
+        backgroundColor: 'white',
+      }}
+    >
       <h1>{post.title}</h1>
-      
+
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
         {post.user_profile?.profile_pic && (
@@ -348,10 +355,10 @@ export default function PostDetail() {
 
 
       {mediaItems.length > 0 && (
-        <div style={{ 
-          marginBottom: '20px', 
-          padding: '10px', 
-          backgroundColor: '#f8f9fa', 
+        <div style={{
+          marginBottom: '20px',
+          padding: '10px',
+          backgroundColor: '#f8f9fa',
           borderRadius: '6px',
           fontSize: '14px',
           color: '#666'
@@ -370,13 +377,13 @@ export default function PostDetail() {
         </button>
         {isOwner && (
           <Link href={`/posts/${id}/edit`}>
-            <button style={{ 
-              padding: '10px 20px', 
-              background: '#007bff', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '4px', 
-              cursor: 'pointer' 
+            <button style={{
+              padding: '10px 20px',
+              background: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
             }}>
               Edit Post
             </button>

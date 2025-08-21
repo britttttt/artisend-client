@@ -2,18 +2,24 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAppContext } from '../../context/state';
 import { getBusinessProfileByUserId, getUserAccountById } from '../../data/auth';
+
 import styles from "/styles/posts.module.css"
 import PostFilter from '../../components/filterbar/filterbar';
 
-
 export default function NearbyPosts() {
   const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [filteredPosts, setFilteredPosts] = useState([])
 
-  const { token } = useAppContext();
+  const { token, profile } = useAppContext();
   const router = useRouter();
+
+  const profileData = Array.isArray(profile) ? profile[0] : profile;
+  const userLocation = profileData ? {
+    latitude: profileData.latitude,
+    longitude: profileData.longitude
+  } : null;
 
   useEffect(() => {
     if (!token) return;
@@ -33,7 +39,6 @@ export default function NearbyPosts() {
         const postsArray = Array.isArray(data) ? data : data.results || [];
         setPosts(postsArray);
         setFilteredPosts(postsArray);
-
       } catch (err) {
         console.error(err);
         setError('Could not fetch nearby posts.');
@@ -45,11 +50,11 @@ export default function NearbyPosts() {
     fetchNearbyPosts();
   }, [token]);
 
+  const goToPost = (id) => router.push(`/posts/${id}`);
+
   const handleFilteredPostsChange = (newFilteredPosts) => {
     setFilteredPosts(newFilteredPosts);
   };
-
-  const goToPost = (id) => router.push(`/posts/${id}`);
 
   const renderMediaPreview = (mediaItems) => {
     if (!mediaItems || mediaItems.length === 0) {
@@ -61,51 +66,74 @@ export default function NearbyPosts() {
     }
 
     const primaryMedia = mediaItems[0];
-    const remainingCount = mediaItems.length - 1;
+    const additionalMedia = mediaItems.slice(1);
 
     return (
       <div className={styles.mediaPreview}>
-        {primaryMedia.media_type === 'image' && (
-          <img
-            src={primaryMedia.file}
-            alt="Post media"
-            className={styles.mediaImage}
-          />
-        )}
+        {/* Primary media */}
+        <div className={styles.primaryMediaContainer}>
+          {primaryMedia.media_type === 'image' && (
+            <img
+              src={primaryMedia.file}
+              alt="Post media"
+              className={styles.mediaImage}
+            />
+          )}
 
-        {primaryMedia.media_type === 'video' && (
-          <div className={styles.mediaVideoPlaceholder}>
-            <div className={styles.mediaPlaceholderContent}>
-              <div className={styles.mediaIcon}>🎥</div>
-              <div className={styles.mediaLabel}>Video</div>
+          {primaryMedia.media_type === 'video' && (
+            <div className={styles.mediaVideoPlaceholder}>
+              <div className={styles.mediaPlaceholderContent}>
+                <div className={styles.mediaIcon}>🎥</div>
+                <div className={styles.mediaLabel}>Video</div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {primaryMedia.media_type === 'audio' && (
-          <div className={styles.mediaAudioPlaceholder}>
-            <div className={styles.mediaPlaceholderContent}>
-              <div className={styles.mediaIcon}>🎵</div>
-              <div className={styles.mediaLabel}>Audio</div>
+          {primaryMedia.media_type === 'audio' && (
+            <div className={styles.mediaAudioPlaceholder}>
+              <div className={styles.mediaPlaceholderContent}>
+                <div className={styles.mediaIcon}>🎵</div>
+                <div className={styles.mediaLabel}>Audio</div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {remainingCount > 0 && (
-          <div className={styles.mediaCountBadge}>
-            +{remainingCount}
-          </div>
-        )}
-
-        {mediaItems.length > 1 && (
-          <div className={styles.mediaTypeIndicators}>
-            {mediaItems.slice(0, 3).map((item, index) => (
-              <div key={index} className={styles.mediaTypeIcon}>
-                {item.media_type === 'image' && '📸'}
-                {item.media_type === 'video' && '🎥'}
-                {item.media_type === 'audio' && '🎵'}
+        {/* Additional media cards that fan out on hover */}
+        {additionalMedia.length > 0 && (
+          <div className={styles.additionalMediaCards}>
+            {additionalMedia.map((media, index) => (
+              <div 
+                key={index}
+                className={`${styles.mediaCard} ${styles[`mediaCard${index + 1}`]}`}
+                style={{ '--card-index': index + 1 }}
+              >
+                {media.media_type === 'image' && (
+                  <img
+                    src={media.file}
+                    alt={`Additional media ${index + 1}`}
+                    className={styles.additionalMediaImage}
+                  />
+                )}
+                {media.media_type === 'video' && (
+                  <div className={styles.additionalMediaPlaceholder}>
+                    <div className={styles.mediaIcon}>🎥</div>
+                  </div>
+                )}
+                {media.media_type === 'audio' && (
+                  <div className={styles.additionalMediaPlaceholder}>
+                    <div className={styles.mediaIcon}>🎵</div>
+                  </div>
+                )}
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Media count badge */}
+        {additionalMedia.length > 0 && (
+          <div className={styles.mediaCountBadge}>
+            +{additionalMedia.length}
           </div>
         )}
       </div>
@@ -114,19 +142,17 @@ export default function NearbyPosts() {
 
   if (loading) return <p className={styles.loadingMessage}>Loading posts...</p>;
   if (error) return <p className={styles.errorMessage}>{error}</p>;
-  if (posts.length === 0) return <p className={styles.noPostsMessage}>No posts found nearby.</p>;
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Posts in Your Area</h1>
+      <h1>Community Posts</h1>
       {posts.length > 0 && (
         <PostFilter
           posts={posts}
           onFilteredPostsChange={handleFilteredPostsChange}
-          initialCollapsed={false}
+          userLocation={userLocation}
         />
       )}
-
 
       {filteredPosts.length === 0 ? (
         <p className={styles.noPostsMessage}>
@@ -140,7 +166,6 @@ export default function NearbyPosts() {
               className={`${styles.box} ${styles.postCard}`}
               onClick={() => goToPost(post.id)}
             >
-              
               <div className={styles.userHeader}>
                 {post.user_profile?.profile_pic && (
                   <img
@@ -151,39 +176,35 @@ export default function NearbyPosts() {
                     className={styles.profilePic}
                   />
                 )}
+                <h2 className={styles.userName}>
+                  {post.user_business?.display_name || 'Unknown User'}
+                </h2>
                 <div className={styles.userInfo}>
-                  <h4 className={styles.userName}>
-                    {post.user_business?.display_name || 'Unknown User'}
-                  </h4>
-                  {post.created_at && (
-                    <div className={styles.postDate}>
-                      {new Date(post.created_at).toLocaleDateString()}
-                    </div>
-                  )}
                 </div>
+                <h3 className={styles.postTitle}>{post.title}</h3>
               </div>
 
-
               <div className={styles.postContent}>
-                <h3 className={styles.postTitle}>{post.title}</h3>
-                
-
                 <div className={styles.mediaContainer}>
                   {renderMediaPreview(post.media)}
                 </div>
 
+                {post.created_at && (
+                  <div className={styles.postDate}>
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </div>
+                )}
+
                 {post.content && (
                   <p className={styles.contentPreview}>
-                    {post.content.length > 150 
-                      ? `${post.content.substring(0, 150)}...` 
+                    {post.content.length > 150
+                      ? `${post.content.substring(0, 150)}...`
                       : post.content
                     }
                   </p>
                 )}
               </div>
-              
             </div>
-            
           );
         })
       )}
@@ -198,6 +219,5 @@ export default function NearbyPosts() {
         </div>
       )}
     </div>
-    
   );
 }

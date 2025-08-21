@@ -1,4 +1,3 @@
-
 .fabButton {
   border-radius: 100%;
   object-fit: cover;
@@ -6,7 +5,7 @@
   height: 7em;
   position: fixed;
   bottom: 5em;
-  right: 5em; 
+  right: 5em;
   background-color: #ca7046;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -22,12 +21,12 @@
 }
 
 .box:hover {
-  transform: scale(1.03);
+  transform: scale(1.01);
   transition: all 0.3s ease;
 }
 
 .postPhoto:hover {
-  transform: scale(1.7);
+  transform: scale(1.5);
   transition: all 0.5s ease;
 }
 
@@ -37,15 +36,15 @@
   align-items: center;
 }
 
+
 .title {
-  color: #333;
+  color: #2b2929;
   margin-bottom: 2rem;
 }
 
 .postCard {
   cursor: pointer;
-  padding: 0.5rem;
-  width: 52em;
+  width: 70em;
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
@@ -55,15 +54,15 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  background-color: antiquewhite;
-  flex-direction: row;
+  background: #9b9b7a;
+  background: linear-gradient(296deg,#7a756f 0%, #878b71 40%, #b8bb9e 20%);
+  flex-direction: row-reverse;
   padding: 10px;
   border-radius: 8px 8px 0 0;
 }
 
 .profilePic {
   object-fit: cover;
-  border-radius: 50%;
   border: 2px solid #ddd;
 }
 
@@ -73,24 +72,27 @@
 
 .userName {
   margin: 0 0 5px 0;
-  color: #333;
+  color: #2b2929;
+  font-weight: 700;
+  font-size: 1.15em;
 }
 
 .postDate {
-  color: #666;
+  color: #1d1d1d;
   font-size: 14px;
+  margin-bottom: 1rem;
 }
 
 .postContent {
   cursor: pointer;
   padding: 1em;
-  background-color: white;
+  background-color: #ebecdd;
   border-radius: 0 0 8px 8px;
 }
 
 .postTitle {
+  color: #000000;
   margin-bottom: 15px;
-  color: #333;
 }
 
 .mediaContainer {
@@ -107,21 +109,99 @@
   border-radius: 8px;
 }
 
+/* Updated media preview with card fan effect */
 .mediaPreview {
   position: relative;
+  display: inline-block;
+}
+
+.primaryMediaContainer {
+  position: relative;
+  z-index: 10;
 }
 
 .mediaImage {
-  width: 100%;
-  height: 200px;
+  width: 10em;
+  height: 10em;
   object-fit: cover;
   border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Additional media cards */
+.additionalMediaCards {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.mediaCard {
+  position: absolute;
+  width: 10em;
+  height: 10em;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: translateX(0) translateY(0) rotate(0deg);
+  z-index: calc(10 - var(--card-index));
+}
+
+/* Card positions when fanned out */
+.mediaPreview:hover .mediaCard1 {
+  opacity: 0.9;
+  transform: translateX(15px) translateY(15px) rotate(8deg);
+}
+
+.mediaPreview:hover .mediaCard2 {
+  opacity: 0.8;
+  transform: translateX(25px) translateY(26px) rotate(15deg);
+}
+
+.mediaPreview:hover .mediaCard3 {
+  opacity: 0.8;
+  transform: translateX(35px) translateY(30px) rotate(22deg);
+}
+
+.mediaPreview:hover .mediaCard4 {
+  opacity: 0.8;
+  transform: translateX(45px) translateY(40px) rotate(29deg);
+}
+
+.mediaPreview:hover .mediaCard5 {
+  opacity: 0.8;
+  transform: translateX(55px) translateY(50px) rotate(36deg);
+}
+
+/* For cards beyond 5, they stack with increasing rotation */
+.mediaPreview:hover .mediaCard:nth-child(n+7) {
+  opacity: 0.6;
+  transform: translateX(65px) translateY(60px) rotate(43deg);
+}
+
+.additionalMediaImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.additionalMediaPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(296deg,#807970 0%, #dee4bb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
 .mediaVideoPlaceholder {
   width: 100%;
   height: 100px;
-  background-color: #000;
+  background: #9b9b7a;
+  background: linear-gradient(296deg,#807970 0%, #dee4bb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,32 +237,19 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 6px 10px;
+  border-radius: 15px;
   font-size: 12px;
   font-weight: bold;
+  z-index: 20;
+  transition: all 0.3s ease;
 }
 
-.mediaTypeIndicators {
-  position: absolute;
-  bottom: 10px;
-  left: 8px;
-  display: flex;
-  gap: 2px;
-}
-
-.mediaTypeIcon {
-  width: 30px;
-  height: 30px;
-  background-color: rgba(0, 0, 0, 0.7);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: white;
+.mediaPreview:hover .mediaCountBadge {
+  background-color: rgba(202, 112, 70, 0.9);
+  transform: scale(1.1);
 }
 
 .contentPreview {
