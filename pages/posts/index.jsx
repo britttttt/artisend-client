@@ -56,6 +56,76 @@ export default function NearbyPosts() {
     setFilteredPosts(newFilteredPosts);
   };
 
+  // Function to generate video thumbnail
+  const generateVideoThumbnail = (videoUrl) => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      video.crossOrigin = 'anonymous';
+      video.currentTime = 1; // Capture frame at 1 second
+      
+      video.onloadedmetadata = () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      };
+      
+      video.onseeked = () => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+        resolve(thumbnailUrl);
+      };
+      
+      video.onerror = () => reject(new Error('Failed to load video'));
+      video.src = videoUrl;
+    });
+  };
+
+  // Video thumbnail component
+  const VideoThumbnail = ({ videoUrl, className }) => {
+    const [thumbnailUrl, setThumbnailUrl] = useState(null);
+    const [thumbnailError, setThumbnailError] = useState(false);
+
+    useEffect(() => {
+      const loadThumbnail = async () => {
+        try {
+          const thumbnail = await generateVideoThumbnail(videoUrl);
+          setThumbnailUrl(thumbnail);
+        } catch (error) {
+          console.error('Error generating video thumbnail:', error);
+          setThumbnailError(true);
+        }
+      };
+
+      loadThumbnail();
+    }, [videoUrl]);
+
+    if (thumbnailError || !thumbnailUrl) {
+      return (
+        <div className={`${styles.mediaVideoPlaceholder} ${className}`}>
+          <div className={styles.mediaPlaceholderContent}>
+            <div className={styles.mediaIcon}>🎥</div>
+            <div className={styles.mediaLabel}>Video</div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className={`${styles.videoThumbnailContainer} ${className}`}>
+        <img
+          src={thumbnailUrl}
+          alt="Video thumbnail"
+          className={styles.mediaImage}
+        />
+        <div className={styles.playButtonOverlay}>
+          <div className={styles.playButton}>▶</div>
+        </div>
+      </div>
+    );
+  };
+
   const renderMediaPreview = (mediaItems) => {
     if (!mediaItems || mediaItems.length === 0) {
       return (
@@ -70,7 +140,6 @@ export default function NearbyPosts() {
 
     return (
       <div className={styles.mediaPreview}>
-        {/* Primary media */}
         <div className={styles.primaryMediaContainer}>
           {primaryMedia.media_type === 'image' && (
             <img
@@ -81,12 +150,10 @@ export default function NearbyPosts() {
           )}
 
           {primaryMedia.media_type === 'video' && (
-            <div className={styles.mediaVideoPlaceholder}>
-              <div className={styles.mediaPlaceholderContent}>
-                <div className={styles.mediaIcon}>🎥</div>
-                <div className={styles.mediaLabel}>Video</div>
-              </div>
-            </div>
+            <VideoThumbnail 
+              videoUrl={primaryMedia.file}
+              className={styles.mediaImage}
+            />
           )}
 
           {primaryMedia.media_type === 'audio' && (
@@ -99,7 +166,6 @@ export default function NearbyPosts() {
           )}
         </div>
 
-        {/* Additional media cards that fan out on hover */}
         {additionalMedia.length > 0 && (
           <div className={styles.additionalMediaCards}>
             {additionalMedia.map((media, index) => (
@@ -116,9 +182,10 @@ export default function NearbyPosts() {
                   />
                 )}
                 {media.media_type === 'video' && (
-                  <div className={styles.additionalMediaPlaceholder}>
-                    <div className={styles.mediaIcon}>🎥</div>
-                  </div>
+                  <VideoThumbnail 
+                    videoUrl={media.file}
+                    className={styles.additionalMediaImage}
+                  />
                 )}
                 {media.media_type === 'audio' && (
                   <div className={styles.additionalMediaPlaceholder}>
@@ -130,7 +197,6 @@ export default function NearbyPosts() {
           </div>
         )}
 
-        {/* Media count badge */}
         {additionalMedia.length > 0 && (
           <div className={styles.mediaCountBadge}>
             +{additionalMedia.length}
