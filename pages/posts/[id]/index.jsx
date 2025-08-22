@@ -16,7 +16,7 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
- 
+
   getBusinessProfileByUserId
 
   const profileData = Array.isArray(profile) ? profile[0] : profile;
@@ -310,7 +310,7 @@ export default function PostDetail() {
       style={{
         padding: '20px',
         maxWidth: '800px',
-        margin: '40px auto 0', // Adds 40px space at the top
+        margin: '40px auto 0',
         backgroundColor: 'white',
       }}
     >

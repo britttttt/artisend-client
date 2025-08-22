@@ -106,7 +106,6 @@ export default function BusinessProfile() {
       console.log('No banner image selected');
     }
 
-    // Debug FormData contents
     console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
@@ -121,14 +120,14 @@ export default function BusinessProfile() {
       let res;
       
       if (isEditing) {
-        // Update existing business profile
+
         res = await fetch(`http://localhost:8000/userbusiness/${profileData.id}`, {
           method: 'PATCH',
           headers: { Authorization: `Token ${token}` },
           body: formData,
         });
       } else {
-        // Create new business profile
+
         res = await fetch('http://localhost:8000/userbusiness', {
           method: 'POST',
           headers: { Authorization: `Token ${token}` },
