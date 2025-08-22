@@ -65,6 +65,15 @@ export const getUserProfile = () => {
   })
 }
 
+export const getUserProfileById = () => {
+  return fetchWithResponse('businessprofile', {
+    method:"GET",
+    headers:{
+      Authorization: `Token ${localStorage.getItem('token')}`
+    }
+  })
+}
+
 export const getCategories = () => {
   return fetchWithResponse('category', {  
     method: "GET",

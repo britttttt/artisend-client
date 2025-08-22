@@ -56,7 +56,6 @@ export default function NearbyPosts() {
     setFilteredPosts(newFilteredPosts);
   };
 
-  // Function to generate video thumbnail
   const generateVideoThumbnail = (videoUrl) => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
@@ -64,7 +63,7 @@ export default function NearbyPosts() {
       const ctx = canvas.getContext('2d');
       
       video.crossOrigin = 'anonymous';
-      video.currentTime = 1; // Capture frame at 1 second
+      video.currentTime = 1; 
       
       video.onloadedmetadata = () => {
         canvas.width = video.videoWidth;
@@ -82,7 +81,7 @@ export default function NearbyPosts() {
     });
   };
 
-  // Video thumbnail component
+
   const VideoThumbnail = ({ videoUrl, className }) => {
     const [thumbnailUrl, setThumbnailUrl] = useState(null);
     const [thumbnailError, setThumbnailError] = useState(false);

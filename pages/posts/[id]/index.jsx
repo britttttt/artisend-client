@@ -5,6 +5,7 @@ import { useAppContext } from "../../../context/state";
 import { getPostById } from "../../../data/posts";
 import Layout from "../../../components/layout";
 import Navbar from "../../../components/navbar";
+import { getBusinessProfileByUserId } from "../../../data/auth";
 
 export default function PostDetail() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function PostDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+ 
+  getBusinessProfileByUserId
 
   const profileData = Array.isArray(profile) ? profile[0] : profile;
 
