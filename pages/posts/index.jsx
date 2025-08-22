@@ -259,15 +259,15 @@ export default function NearbyPosts() {
                     {new Date(post.created_at).toLocaleDateString()}
                   </div>
                 )}
-
                 {post.content && (
                   <p className={styles.contentPreview}>
-                    {post.content.length > 150
-                      ? `${post.content.substring(0, 150)}...`
+                    {post.content.length > 50
+                      ? `${post.content.substring(0, 50)}...`
                       : post.content
                     }
                   </p>
                 )}
+                <p><strong>Category:</strong> #{post.category_details?.label || 'Uncategorized'}</p>
               </div>
             </div>
           );

@@ -166,6 +166,12 @@ export default function Profile() {
               <strong>Bio:</strong>{" "}
               {profileData?.bio || "No bio available"}
             </p>
+           {profileData?.mediums?.length > 0 && (
+  <p><strong>Mediums:</strong> {profileData.mediums.map(m => m.medium).join(", ")}</p>
+)}
+{profileData?.skills?.length > 0 && (
+  <p><strong>Skills:</strong> {profileData.skills.map(s => s.label).join(", ")}</p>
+)}
             <p>
               <strong>Commissions:</strong>{" "}
               {profileData?.commissions_open ? "Open" : "Closed"}

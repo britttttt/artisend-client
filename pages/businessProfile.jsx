@@ -25,22 +25,25 @@ export default function BusinessProfile() {
 
   const router = useRouter()
 
-  // Normalize profile data (handle array/object formats)
+
   const profileData = Array.isArray(profile) ? profile[0] : profile;
 
   useEffect(() => {
-    // Fetch available mediums
     getMediums()
       .then(data => setAvailableMediums(data))
       .catch(err => console.error('Error fetching mediums:', err))
   }, [])
 
   useEffect(() => {
+  return () => {
+    if (bannerImg) URL.revokeObjectURL(bannerImg);
+  };
+}, [bannerImg]);
+
+  useEffect(() => {
     if (profileData) {
-      // Pre-fill form with existing business profile data
       setIsEditing(true)
       
-      // Set form values
       if (displayName.current) displayName.current.value = profileData.display_name || ''
       if (bio.current) bio.current.value = profileData.bio || ''
       if (phone.current) phone.current.value = profileData.phone || ''
@@ -48,13 +51,11 @@ export default function BusinessProfile() {
       if (businessAddress.current) businessAddress.current.value = profileData.business_address || ''
       if (socialLink.current) socialLink.current.value = profileData.social_link || ''
       
-      // Set mediums and skills if available
       setMediums(profileData.mediums || [])
       setSkills(profileData.skills || [])
       
       setLoading(false)
     } else if (token) {
-      // No profile data - this is a new business profile
       setIsEditing(false)
       setLoading(false)
     }
@@ -68,11 +69,9 @@ export default function BusinessProfile() {
   }
 
   const handleSkillChange = (e) => {
-    const selectedId = parseInt(e.target.value)
-    if (!skills.includes(selectedId)) {
-      setSkills([...skills, selectedId])
-    }
-  }
+  const selectedValues = Array.from(e.target.selectedOptions, option => parseInt(option.value));
+  setSkills(selectedValues);
+};
 
   const relatedSkills = Array.isArray(availableMediums)
     ? availableMediums
@@ -94,7 +93,6 @@ export default function BusinessProfile() {
     formData.append('business_address', businessAddress.current?.value || '');
     formData.append('social_link', socialLink.current?.value || '');
     
-    // Debug banner image upload
     if (bannerImg) {
       console.log('Banner image to upload:', {
         name: bannerImg.name,
@@ -145,10 +143,9 @@ export default function BusinessProfile() {
 
       console.log('Business profile created/updated:', businessData);
 
-      // Now create user mediums and skills
+
       for (const mediumId of mediums) {
         try {
-          // Find the medium object to get its label
           const mediumObj = availableMediums.find(m => m.id === mediumId);
           if (!mediumObj) {
             console.error(`Medium with ID ${mediumId} not found`);
@@ -178,7 +175,6 @@ export default function BusinessProfile() {
 
       for (const skillId of skills) {
         try {
-          // Find the skill object to get its label
           const skillObj = relatedSkills.find(s => s.id === skillId);
           if (!skillObj) {
             console.error(`Skill with ID ${skillId} not found`);
