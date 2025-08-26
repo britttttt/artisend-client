@@ -1,6 +1,8 @@
 # artisend-client
 <div style="display: flex; align-items: center;">
+  <div>
   <img src="https://ik.imagekit.io/b0xq0alh4/Artisend/logo-light.png?updatedAt=1756248712592)" alt="artisend logo" width="150" height="75" style="margin-right: 8px;">
+  </div>
   <span>Artisend is an application to connect local communities with artists and small businesses. Artists and businesses can share markets they’ll be selling at, as well as share their commission rates, and share photos of their craft. 
 </span>
 </div>
