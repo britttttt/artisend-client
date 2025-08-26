@@ -1,14 +1,17 @@
 # artisend-client
 <div style="display: flex; align-items: center;">
   <div>
-  <img src="https://ik.imagekit.io/b0xq0alh4/Artisend/logo-light.png?updatedAt=1756248712592)" alt="artisend logo" width="150" height="75" style="margin-right: 8px;">
+  <img src="https://ik.imagekit.io/b0xq0alh4/Artisend/logo-light.png?updatedAt=1756248712592" alt="artisend logo" width="150" height="75" style="margin-right: 8px;">
   </div>
+  <div>
   <span>Artisend is an application to connect local communities with artists and small businesses. Artists and businesses can share markets they’ll be selling at, as well as share their commission rates, and share photos of their craft. 
 </span>
+  </div>
 </div>
 
 <div style="display: flex; align-items: center;">
-<img src="https://ik.imagekit.io/b0xq0alh4/Artisend/header-gif.gif?updatedAt=1756248501949" height="350" width="550">
+<img src="https://ik.imagekit.io/b0xq0alh4/Artisend/header-gif.gif?updatedAt=1756249224645" height="480" width="720
+ ">
 </div>
 
 ## Overview
@@ -51,7 +54,6 @@ npm run dev
   <img src="https://avatars.githubusercontent.com/u/51220225?v=4" height="50" width="50">
 </a>
 
-Made with JavaScript, React, Next.JS, Bulma, Python, and Django rest API's in [Nashville Software School's](https://nashvillesoftwareschool.com/) Full-Stack Software Developer Program (Cohort-76)
 Made as my Server-Side Full Stack Capstone Project with JavaScript, NextJS, React, Python, and Django rest API's for [Nashville Software School's](https://nashvillesoftwareschool.com/) Full-Stack Software Developer Program (Cohort-76)
 
 
