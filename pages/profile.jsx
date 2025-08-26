@@ -135,9 +135,8 @@ export default function Profile() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`${styles.tabButton} ${
-              activeTab === tab ? styles.activeTab : ""
-            }`}
+            className={`${styles.tabButton} ${activeTab === tab ? styles.activeTab : ""
+              }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
@@ -166,12 +165,12 @@ export default function Profile() {
               <strong>Bio:</strong>{" "}
               {profileData?.bio || "No bio available"}
             </p>
-           {profileData?.mediums?.length > 0 && (
-  <p><strong>Mediums:</strong> {profileData.mediums.map(m => m.medium).join(", ")}</p>
-)}
-{profileData?.skills?.length > 0 && (
-  <p><strong>Skills:</strong> {profileData.skills.map(s => s.label).join(", ")}</p>
-)}
+            {profileData?.mediums?.length > 0 && (
+              <p><strong>Mediums:</strong> {profileData.mediums.map(m => m.medium).join(", ")}</p>
+            )}
+            {profileData?.skills?.length > 0 && (
+              <p><strong>Skills:</strong> {profileData.skills.map(s => s.label).join(", ")}</p>
+            )}
             <p>
               <strong>Commissions:</strong>{" "}
               {profileData?.commissions_open ? "Open" : "Closed"}
@@ -191,7 +190,7 @@ export default function Profile() {
               </p>
             )}
 
-            {profileData?.mediums?.length > 0 && (
+            {/* {profileData?.mediums?.length > 0 && (
               <p>
                 <strong>Mediums:</strong>{" "}
                 {profileData.mediums.join(", ")}
@@ -203,7 +202,7 @@ export default function Profile() {
                 <strong>Skills:</strong>{" "}
                 {profileData.skills.join(", ")}
               </p>
-            )}
+            )} */}
           </div>
         )}
 
