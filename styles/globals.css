@@ -9,7 +9,7 @@
   --offWhite: #f2f2f3;
   --dark: #3b3b3b;
   --outline: #c3c0c0;
-  --appBackground: #d3beb2;
+  --appBackground: #e6dfc8;
 }
 
 body,
@@ -17,14 +17,25 @@ button,
 input,
 select,
 textarea {
+
   font-family: "Nunito", sans-serif;
+}
+
+button{
+  background:#797d62;
+  font-family: "Nunito", sans-serif;
+  background: #797D62;
+ background: radial-gradient(circle,rgba(121, 125, 98, 1) 0%, rgba(144, 148, 127, 1) 100%);
+ color:white;
 }
 
 body {
   background-color: var(--appBackground);
   margin: 1em;
-  padding-top: 60px; 
-
+  background: #2A7B9B;
+/* background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 119, 83, 1) 100%); */
+  background: linear-gradient(90deg,rgb(216, 160, 119) 0%,  rgb(201, 109, 91) 100%);
+  
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -50,7 +61,7 @@ button {
   border-radius: 0.5rem;
   color: var(--white);
   cursor: pointer;
-  color: #3b3b3b;
+  color: #ffffff;
 }
 
 .btn-primary {
@@ -85,11 +96,3 @@ button {
   background-color: #71a500;
 }
 
-.welcome {
-  text-align: center;
-  margin: 5rem 14rem;
-  font-size: 4rem;
-  color: aliceblue;
-  font-weight: bold;
-  text-shadow: 2px 3px 4px lightslategray;
-}

@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import { Input, Textarea } from '../components/form-elements'
 import Layout from '../components/layout'
 import Navbar from '../components/navbar'
 import { useAppContext } from '../context/state'
 import { createUserBusiness, getMediums, getUserProfile } from '../data/auth'
+import styles from '/styles/BusinessProfile.module.css'
 
 export default function BusinessProfile() {
   const { profile, token } = useAppContext()
@@ -25,22 +25,25 @@ export default function BusinessProfile() {
 
   const router = useRouter()
 
-  // Normalize profile data (handle array/object formats)
+
   const profileData = Array.isArray(profile) ? profile[0] : profile;
 
   useEffect(() => {
-    // Fetch available mediums
     getMediums()
       .then(data => setAvailableMediums(data))
       .catch(err => console.error('Error fetching mediums:', err))
   }, [])
 
   useEffect(() => {
+  return () => {
+    if (bannerImg) URL.revokeObjectURL(bannerImg);
+  };
+}, [bannerImg]);
+
+  useEffect(() => {
     if (profileData) {
-      // Pre-fill form with existing business profile data
       setIsEditing(true)
       
-      // Set form values
       if (displayName.current) displayName.current.value = profileData.display_name || ''
       if (bio.current) bio.current.value = profileData.bio || ''
       if (phone.current) phone.current.value = profileData.phone || ''
@@ -48,13 +51,11 @@ export default function BusinessProfile() {
       if (businessAddress.current) businessAddress.current.value = profileData.business_address || ''
       if (socialLink.current) socialLink.current.value = profileData.social_link || ''
       
-      // Set mediums and skills if available
       setMediums(profileData.mediums || [])
       setSkills(profileData.skills || [])
       
       setLoading(false)
     } else if (token) {
-      // No profile data - this is a new business profile
       setIsEditing(false)
       setLoading(false)
     }
@@ -68,11 +69,9 @@ export default function BusinessProfile() {
   }
 
   const handleSkillChange = (e) => {
-    const selectedId = parseInt(e.target.value)
-    if (!skills.includes(selectedId)) {
-      setSkills([...skills, selectedId])
-    }
-  }
+  const selectedValues = Array.from(e.target.selectedOptions, option => parseInt(option.value));
+  setSkills(selectedValues);
+};
 
   const relatedSkills = Array.isArray(availableMediums)
     ? availableMediums
@@ -94,7 +93,6 @@ export default function BusinessProfile() {
     formData.append('business_address', businessAddress.current?.value || '');
     formData.append('social_link', socialLink.current?.value || '');
     
-    // Debug banner image upload
     if (bannerImg) {
       console.log('Banner image to upload:', {
         name: bannerImg.name,
@@ -106,7 +104,6 @@ export default function BusinessProfile() {
       console.log('No banner image selected');
     }
 
-    // Debug FormData contents
     console.log('FormData contents:');
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
@@ -121,14 +118,14 @@ export default function BusinessProfile() {
       let res;
       
       if (isEditing) {
-        // Update existing business profile
+
         res = await fetch(`http://localhost:8000/userbusiness/${profileData.id}`, {
           method: 'PATCH',
           headers: { Authorization: `Token ${token}` },
           body: formData,
         });
       } else {
-        // Create new business profile
+
         res = await fetch('http://localhost:8000/userbusiness', {
           method: 'POST',
           headers: { Authorization: `Token ${token}` },
@@ -146,10 +143,9 @@ export default function BusinessProfile() {
 
       console.log('Business profile created/updated:', businessData);
 
-      // Now create user mediums and skills
+
       for (const mediumId of mediums) {
         try {
-          // Find the medium object to get its label
           const mediumObj = availableMediums.find(m => m.id === mediumId);
           if (!mediumObj) {
             console.error(`Medium with ID ${mediumId} not found`);
@@ -179,7 +175,6 @@ export default function BusinessProfile() {
 
       for (const skillId of skills) {
         try {
-          // Find the skill object to get its label
           const skillObj = relatedSkills.find(s => s.id === skillId);
           if (!skillObj) {
             console.error(`Skill with ID ${skillId} not found`);
@@ -217,11 +212,11 @@ export default function BusinessProfile() {
 
   if (loading) {
     return (
-      <div className="columns is-centered">
-        <div className="column is-half">
-          <div className="box has-text-centered">
-            <p>Loading business profile...</p>
-            <progress className="progress is-small is-primary" max="100">Loading</progress>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingColumn}>
+          <div className={styles.loadingBox}>
+            <p className={styles.loadingText}>Loading business profile...</p>
+            <div className={styles.progress}></div>
           </div>
         </div>
       </div>
@@ -229,105 +224,160 @@ export default function BusinessProfile() {
   }
 
   return (
-    <div className="columns is-centered">
-      <div className="column is-half">
-        <form className="box" onSubmit={submit}>
-          <h1 className="title">
+    <div className={styles.container}>
+      <div className={styles.column}>
+        <form className={styles.form} onSubmit={submit}>
+          <h1 className={styles.title}>
             {isEditing ? 'Edit Business Profile' : 'Create Business Profile'}
           </h1>
 
-          <Input id="displayName" refEl={displayName} type="text" label="Display Name" required />
-          <Input id="businessEmail" refEl={businessEmail} type="email" label="Business Email" required />
-          <Input id="phone" refEl={phone} type="tel" label="Business Phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" />
-          <Input id="businessAddress" refEl={businessAddress} type="text" label="Business Address" />
-          <Input id="socialLink" refEl={socialLink} type="text" label="Social Media Link" />
-          <Textarea id="bio" refEl={bio} label="Bio" />
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="displayName">Display Name</label>
+            <input
+              id="displayName"
+              ref={displayName}
+              type="text"
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="businessEmail">Business Email</label>
+            <input
+              id="businessEmail"
+              ref={businessEmail}
+              type="email"
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="phone">Business Phone</label>
+            <input
+              id="phone"
+              ref={phone}
+              type="tel"
+              className={styles.input}
+              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="businessAddress">Business Address</label>
+            <input
+              id="businessAddress"
+              ref={businessAddress}
+              type="text"
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="socialLink">Social Media Link</label>
+            <input
+              id="socialLink"
+              ref={socialLink}
+              type="text"
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="bio">Bio</label>
+            <textarea
+              id="bio"
+              ref={bio}
+              className={styles.textarea}
+            />
+          </div>
 
           {/* Show current banner if editing */}
-{isEditing && profileData.banner_img && (
-  <div className="field">
-    <label className="label">Current Banner Image</label>
-    <figure className="image" style={{ maxWidth: '200px' }}>
-      <img 
-        src={profileData.banner_img} 
-        alt="Current banner"
-        style={{ 
-          width: '100%', 
-          height: 'auto',
-          borderRadius: '8px'
-        }}
-      />
-    </figure>
-  </div>
-)}
+          {isEditing && profileData.banner_img && (
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Current Banner Image</label>
+              <div className={styles.currentBanner}>
+                <img 
+                  src={profileData.banner_img} 
+                  alt="Current banner"
+                  className={styles.bannerImage}
+                />
+              </div>
+            </div>
+          )}
 
-<div className="field">
-  <label className="label">
-    {isEditing ? "Upload New Banner Image (optional)" : "Upload Banner Image"}
-  </label>
-  <div className="control">
-    <input
-      className="input"
-      type="file"
-      accept="image/*"
-      onChange={(e) => {
-        const file = e.target.files[0];
-        console.log('File selected:', file);
-        setBannerImg(file);
-      }}
-    />
-  </div>
-  {bannerImg && (
-    <div style={{ marginTop: "10px" }}>
-      <p>Selected: {bannerImg.name}</p>
-      <img
-        src={URL.createObjectURL(bannerImg)}
-        alt="Banner preview"
-        style={{ maxWidth: "150px", borderRadius: "8px" }}
-      />
-    </div>
-  )}
-</div>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>
+              {isEditing ? "Upload New Banner Image (optional)" : "Upload Banner Image"}
+            </label>
+            <input
+              className={styles.fileInput}
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                console.log('File selected:', file);
+                setBannerImg(file);
+              }}
+            />
+            {bannerImg && (
+              <div className={styles.previewContainer}>
+                <p className={styles.previewText}>Selected: {bannerImg.name}</p>
+                <img
+                  src={URL.createObjectURL(bannerImg)}
+                  alt="Banner preview"
+                  className={styles.previewImage}
+                />
+              </div>
+            )}
+          </div>
 
-          <label className="label">Select Mediums</label>
-          <select onChange={handleMediumChange}>
-            <option value="">-- Select a Medium --</option>
-            {availableMediums.map(medium => (
-              <option
-                key={medium.id}
-                value={medium.id}
-                disabled={mediums.includes(medium.id)}
-              >
-                {medium.label}
-              </option>
-            ))}
-          </select>
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Select Mediums</label>
+            <select onChange={handleMediumChange} className={styles.select}>
+              <option value="">-- Select a Medium --</option>
+              {availableMediums.map(medium => (
+                <option
+                  key={medium.id}
+                  value={medium.id}
+                  disabled={mediums.includes(medium.id)}
+                >
+                  {medium.label}
+                </option>
+              ))}
+            </select>
 
-          <div className="tags">
-            {mediums.map(id => {
-              const medium = availableMediums.find(m => m.id === id)
-              return (
-                <span key={id} className="tag is-info">{medium?.label}
-                  <button
-                    type="button"
-                    className="delete is-small"
-                    onClick={() => {
-                      setMediums(mediums.filter(mid => mid !== id))
-                    }}
-                    aria-label={`Remove ${medium?.label}`}
-                  >x</button>
-                </span>
-              )
-            })}
+            <div className={styles.tags}>
+              {mediums.map(id => {
+                const medium = availableMediums.find(m => m.id === id)
+                return (
+                  <span key={id} className={styles.tag}>
+                    {medium?.label}
+                    <button
+                      type="button"
+                      className={styles.tagButton}
+                      onClick={() => {
+                        setMediums(mediums.filter(mid => mid !== id))
+                      }}
+                      aria-label={`Remove ${medium?.label}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                )
+              })}
+            </div>
           </div>
 
           {mediums.length > 0 && (
-            <>
-              <label className="label">Select Skills</label>
+            <div className={styles.inputGroup}>
+              <label className={styles.label}>Select Skills</label>
               <select
                 multiple
                 value={skills}
                 onChange={handleSkillChange}
+                className={styles.multiSelect}
               >
                 {relatedSkills.map(skill => (
                   <option key={skill.id} value={skill.id} disabled={skills.includes(skill.id)}>
@@ -336,39 +386,37 @@ export default function BusinessProfile() {
                 ))}
               </select>
 
-              <div className="tags">
+              <div className={styles.tags}>
                 {skills.map(id => {
                   const skill = relatedSkills.find(s => s.id === id)
                   if (!skill) return null
                   return (
-                    <span key={id} className="tag is-info">
+                    <span key={id} className={styles.tag}>
                       {skill?.label} ({skill.mediumLabel})
                       <button
                         type="button"
-                        className="delete is-small"
+                        className={styles.tagButton}
                         onClick={() => {
                           setSkills(skills.filter(sid => sid !== id))
                         }}
                         aria-label={`Remove ${skill.label}`}
-                      >x</button>
+                      >
+                        ×
+                      </button>
                     </span>
                   )
                 })}
               </div>
-            </>
+            </div>
           )}
 
-          <div className="field is-grouped">
-            <div className="control">
-              <button className="button is-link" type="submit">
-                {isEditing ? 'Update Profile' : 'Create Profile'}
-              </button>
-            </div>
-            <div className="control">
-              <Link href="/profile">
-                <button className="button is-light" type="button">Cancel</button>
-              </Link>
-            </div>
+          <div className={styles.buttonGroup}>
+            <button className={styles.submitButton} type="submit">
+              {isEditing ? 'Update Profile' : 'Create Profile'}
+            </button>
+            <Link href="/profile" className={styles.cancelButton}>
+              Cancel
+            </Link>
           </div>
         </form>
       </div>

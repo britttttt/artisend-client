@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef, useState, useEffect } from "react";
-import { Input } from "../components/form-elements";
 import Layout from "../components/layout";
 import Navbar from "../components/navbar";
 import { useAppContext } from "../context/state";
 import { getUserProfile, updateUserProfile, getUserAccount, updateUserAccount } from "../data/auth";
+import styles from '../styles/Register.module.css';
 
 export default function EditProfile() {
     const { token, profile } = useAppContext();
@@ -91,93 +91,132 @@ export default function EditProfile() {
             });
     };
 
-    if (loading) return <p>Loading profile...</p>;
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.column}>
+                    <div className={styles.form}>
+                        <p className={styles.title}>Loading profile...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="columns is-centered">
-            <div className="column is-half">
-                <form className="box" onSubmit={submit}>
-                    <h1 className="title">Edit Profile</h1>
+        <div className={styles.container}>
+            <div className={styles.column}>
+                <form className={styles.form} onSubmit={submit}>
+                    <h1 className={styles.title}>Edit Profile</h1>
 
-                    <Input
-                        id="firstName"
-                        value={firstName}
-                        onChangeEvent={(e) => setFirstName(e.target.value)}
-                        type="text"
-                        label="First Name (optional)"
-                    />
-                    <Input
-                        id="lastName"
-                        value={lastName}
-                        onChangeEvent={(e) => setLastName(e.target.value)}
-                        type="text"
-                        label="Last Name (optional)"
-                    />
-                    <Input
-                        id="email"
-                        value={email}
-                        onChangeEvent={(e) => setEmail(e.target.value)}
-                        type="email"
-                        label="Email"
-                        required
-                    />
-                    <Input
-                        id="postalCode"
-                        value={postalCode}
-                        onChangeEvent={(e) => setPostalCode(e.target.value)}
-                        type="text"
-                        label="Postal/Zip Code"
-                        pattern="[0-9]{5}"
-                        required
-                    />
-                    <Input
-                        id="username"
-                        value={username}
-                        onChangeEvent={(e) => setUsername(e.target.value)}
-                        type="text"
-                        label="Username"
-                    />
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label} htmlFor="firstName">First Name (optional)</label>
+                        <input
+                            id="firstName"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            type="text"
+                            className={styles.input}
+                        />
+                    </div>
 
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setAvatar(e.target.files[0])}
-                    />
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label} htmlFor="lastName">Last Name (optional)</label>
+                        <input
+                            id="lastName"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            type="text"
+                            className={styles.input}
+                        />
+                    </div>
 
-                    <div className="field">
-                        <label className="label">Account type</label>
-                        <div className="control">
-                            <label className="radio">
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label} htmlFor="email">Email</label>
+                        <input
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="email"
+                            className={styles.input}
+                            required
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label} htmlFor="postalCode">Postal/Zip Code</label>
+                        <input
+                            id="postalCode"
+                            value={postalCode}
+                            onChange={(e) => setPostalCode(e.target.value)}
+                            type="text"
+                            className={styles.input}
+                            pattern="[0-9]{5}"
+                            required
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label} htmlFor="username">Username</label>
+                        <input
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            type="text"
+                            className={styles.input}
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>Avatar (optional)</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setAvatar(e.target.files[0])}
+                            className={styles.fileInput}
+                        />
+                        {avatar && (
+                            <div className={styles.previewContainer}>
+                                <img
+                                    src={URL.createObjectURL(avatar)}
+                                    alt="Preview"
+                                    className={styles.previewImage}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className={styles.accountTypeGroup}>
+                        <label className={styles.label}>Account type</label>
+                        <div className={styles.radioGroup}>
+                            <label className={styles.radioLabel}>
                                 <input
                                     type="radio"
                                     name="accountType"
                                     checked={!isBusiness}
                                     onChange={() => setIsBusiness(false)}
+                                    className={styles.radioInput}
                                 />
-                                &nbsp;Personal/Individual
+                                Personal/Individual
                             </label>
-                            &nbsp;&nbsp;
-                            <label className="radio">
+                            <label className={styles.radioLabel}>
                                 <input
                                     type="radio"
                                     name="accountType"
                                     checked={isBusiness}
                                     onChange={() => setIsBusiness(true)}
+                                    className={styles.radioInput}
                                 />
-                                &nbsp;Business
+                                Business
                             </label>
                         </div>
                     </div>
 
-                    <div className="field is-grouped">
-                        <div className="control">
-                            <button className="button is-link" type="submit">Update</button>
-                        </div>
-                        <div className="control">
-                            <Link href="/">
-                                <button className="button is-link" type="button">Cancel</button>
-                            </Link>
-                        </div>
+                    <div className={styles.buttonGroup}>
+                        <button className={styles.submitButton} type="submit">Update</button>
+                        <Link href="/" className={styles.cancelButton}>
+                            Cancel
+                        </Link>
                     </div>
                 </form>
             </div>

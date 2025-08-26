@@ -1,0 +1,174 @@
+.form {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.inputGroup {
+  margin-bottom: 15px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.input {
+  width: calc(100% - 10px);
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.textarea {
+  width: calc(100% - 10px);
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.fileInput {
+  width: calc(100% - 10px);
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.fileInput:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.previewContainer {
+  margin-top: 15px;
+}
+
+.previewText {
+  margin: 0 0 10px 0;
+  font-weight: 500;
+}
+
+.previewGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.previewItem {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 200px;
+}
+
+.previewImage {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.previewPlaceholder {
+  background-color: #f0f0f0;
+  padding: 20px;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.fileInfo {
+  font-size: 12px;
+  color: #666;
+}
+
+.fileName {
+  margin-bottom: 2px;
+}
+
+.fileSize {
+  margin-bottom: 5px;
+}
+
+.removeButton {
+  margin-top: 5px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.removeButton:hover {
+  background: #cc3333;
+}
+
+.removeButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.categoryGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.categoryLabel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.categoryInput {
+  margin: 0;
+}
+
+.error {
+  color: #ff4444;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffeaea;
+  border: 1px solid #ffcccc;
+  border-radius: 4px;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
+
+.submitButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

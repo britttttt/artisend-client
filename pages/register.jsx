@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
-import { Input } from '../components/form-elements'
 import Layout from '../components/layout'
 import Navbar from '../components/navbar'
 import { useAppContext } from '../context/state'
 import { register } from '../data/auth'
+import styles from '../styles/Register.module.css'
 
 export default function Register() {
   const { setToken } = useAppContext()
@@ -23,102 +23,159 @@ export default function Register() {
   const router = useRouter()
 
   const submit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const user = {
-    username: username.current?.value,
-    password: password.current?.value,
-    first_name: firstName.current?.value,
-    last_name: lastName.current?.value,
-    email: email.current?.value,
-    postal_code: postalCode.current?.value,
-    avatar,
-    is_business: isBusiness,
-    is_admin: false
+    const user = {
+      username: username.current?.value,
+      password: password.current?.value,
+      first_name: firstName.current?.value,
+      last_name: lastName.current?.value,
+      email: email.current?.value,
+      postal_code: postalCode.current?.value,
+      avatar,
+      is_business: isBusiness,
+      is_admin: false
+    };
+
+    register(user)
+    .then((res) => {
+      console.log('Register response:', res);
+      if (res && res.token) {
+        setToken(res.token);
+        if (isBusiness) {
+          router.push('/businessProfile');
+        } else {
+          router.push('/');
+        }
+      } else {
+        alert(res?.error || 'Registration failed.');
+      }
+    })
+    .catch((err) => {
+      console.error('Register failed:', err);
+      alert('An error occurred during registration.');
+    });
   };
 
-  register(user)
-  .then((res) => {
-    console.log('Register response:', res);
-    if (res && res.token) {
-      setToken(res.token);
-      if (isBusiness) {
-        router.push('/businessProfile');
-      } else {
-        router.push('/');
-      }
-    } else {
-      alert(res?.error || 'Registration failed.');
-    }
-  })
-  .catch((err) => {
-    console.error('Register failed:', err);
-    alert('An error occurred during registration.');
-  });
-};
-
   return (
-    <div className="columns is-centered">
-      <div className="column is-half">
-        <form className="box" onSubmit={submit}>
-          <h1 className="title">Welcome!</h1>
+    <div className={styles.container}>
+      <div className={styles.column}>
+        <form className={styles.form} onSubmit={submit}>
+          <h1 className={styles.title}>Welcome!</h1>
 
-          <Input id="firstName" refEl={firstName} type="text" label="First Name (optional)" />
-          <Input id="lastName" refEl={lastName} type="text" label="Last Name (optional)" />
-          <Input id="email" refEl={email} type="email" label="Email" required />
-          <Input id="postalCode" refEl={postalCode} type="text" label="Postal/Zip Code" pattern="[0-9]{5}" required />
-          <Input id="username" refEl={username} type="text" label="Username" />
-          <Input id="password" refEl={password} type="password" label="Password" />
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setAvatar(e.target.files[0])}
-          />
-          {avatar && (
-          <div style={{ marginTop: "10px" }}>
-            <img
-              src={URL.createObjectURL(avatar)}
-              alt="Preview"
-              style={{ maxWidth: "100px", borderRadius: "8px" }}
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="firstName">First Name (optional)</label>
+            <input
+              id="firstName"
+              ref={firstName}
+              type="text"
+              className={styles.input}
             />
           </div>
-        )}
 
-          <div className="field">
-            <label className="label">Account type</label>
-            <div className="control">
-              <label className="radio">
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="lastName">Last Name (optional)</label>
+            <input
+              id="lastName"
+              ref={lastName}
+              type="text"
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="email">Email</label>
+            <input
+              id="email"
+              ref={email}
+              type="email"
+              className={styles.input}
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="postalCode">Postal/Zip Code</label>
+            <input
+              id="postalCode"
+              ref={postalCode}
+              type="text"
+              className={styles.input}
+              pattern="[0-9]{5}"
+              required
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="username">Username</label>
+            <input
+              id="username"
+              ref={username}
+              type="text"
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="password">Password</label>
+            <input
+              id="password"
+              ref={password}
+              type="password"
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Avatar (optional)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setAvatar(e.target.files[0])}
+              className={styles.fileInput}
+            />
+            {avatar && (
+              <div className={styles.previewContainer}>
+                <img
+                  src={URL.createObjectURL(avatar)}
+                  alt="Preview"
+                  className={styles.previewImage}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className={styles.accountTypeGroup}>
+            <label className={styles.label}>Account type</label>
+            <div className={styles.radioGroup}>
+              <label className={styles.radioLabel}>
                 <input
                   type="radio"
                   name="accountType"
                   checked={!isBusiness}
                   onChange={() => setIsBusiness(false)}
+                  className={styles.radioInput}
                 />
-                &nbsp;Personal/Individual
+                Personal/Individual
               </label>
-              &nbsp;&nbsp;
-              <label className="radio">
+              <label className={styles.radioLabel}>
                 <input
                   type="radio"
                   name="accountType"
                   checked={isBusiness}
                   onChange={() => setIsBusiness(true)}
+                  className={styles.radioInput}
                 />
-                &nbsp;Business
+                Business
               </label>
             </div>
           </div>
 
-          <div className="field is-grouped">
-            <div className="control">
-              <button className="button is-link" type="submit">Submit</button>
-            </div>
-            <div className="control">
-              <Link href="/login">
-                <button className="button is-link" type="button">Cancel</button>
-              </Link>
-            </div>
+          <div className={styles.buttonGroup}>
+            <button className={styles.submitButton} type="submit">Submit</button>
+            <Link href="/login" className={styles.cancelButton}>
+              Cancel
+            </Link>
           </div>
         </form>
       </div>
