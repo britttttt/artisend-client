@@ -1,10 +1,13 @@
 # artisend-client
 <div style="display: flex; align-items: center;">
+  <img src="https://ik.imagekit.io/b0xq0alh4/Artisend/logo-light.png?updatedAt=1756248712592)" alt="artisend logo" width="70" height="50" style="margin-right: 8px;">
   <span>Artisend is an application to connect local communities with artists and small businesses. Artists and businesses can share markets they’ll be selling at, as well as share their commission rates, and share photos of their craft. 
 </span>
 </div>
 
-<img src="https://ik.imagekit.io/b0xq0alh4/Artisend/header-gif.gif?updatedAt=1756248501949" height="250" width="350">
+<div style="display: flex; align-items: center;">
+<img src="https://ik.imagekit.io/b0xq0alh4/Artisend/header-gif.gif?updatedAt=1756248501949" height="350" width="550">
+</div>
 
 ## Overview
  <div style="display: flex; align-items: center;">
