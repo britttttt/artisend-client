@@ -29,7 +29,7 @@ export default function PostForm({
 
   useEffect(() => {
     if (profileData?.postalCode) {
-      setPostalCode(profileData.postalCode);
+      setPostalCodne(profileData.postalCode);
     }
   }, [profileData]);
 
