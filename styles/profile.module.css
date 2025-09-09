@@ -28,9 +28,9 @@
 
 .tabContainer {
   display: flex;
-  border-bottom: 2px solid #e0e0e0;
-  margin-bottom: 10px;
-  background-color: #7e645a;
+  height: 4em;
+   background: #9b9b7a;
+  background: linear-gradient(296deg,#7a756f 0%, #878b71 70%, #b8bb9e 20%);
 }
 
 .tabButton {
@@ -39,18 +39,17 @@
   border: none;
   cursor: pointer;
   font-size: 16px;
-  color:#e9bc9e;
+  color:#7a756f ;
   transition: all 0.3s ease;
 }
 
 .tabButton:hover {
-  color: #ff6600;;
+  color: #fff3e4 ;
 }
 
 .activeTab {
   font-weight: bold;
-  color: #ff6600;
-  border-bottom: 3px solid #7e645a;
+  color: #fff3e4;
 }
 
 .tabContent {
