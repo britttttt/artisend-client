@@ -245,18 +245,12 @@ export default function UserProfile() {
               </p>
             )}
 
-            {profileData?.mediums?.length > 0 && (
-              <p>
-                <strong>Mediums:</strong>{" "}
-                {profileData.mediums.join(", ")}
-              </p>
+             {profileData?.mediums?.length > 0 && (
+              <p><strong>Mediums:</strong> {profileData.mediums.map(m => m.medium).join(", ")}</p>
             )}
-
+            
             {profileData?.skills?.length > 0 && (
-              <p>
-                <strong>Skills:</strong>{" "}
-                {profileData.skills.join(", ")}
-              </p>
+              <p><strong>Skills:</strong> {profileData.skills.map(s => s.skill).join(", ")}</p>
             )}
 
             {userAccount?.date_joined && (
