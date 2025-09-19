@@ -169,7 +169,7 @@ export default function Profile() {
               <p><strong>Mediums:</strong> {profileData.mediums.map(m => m.medium).join(", ")}</p>
             )}
             {profileData?.skills?.length > 0 && (
-              <p><strong>Skills:</strong> {profileData.skills.map(s => s.label).join(", ")}</p>
+              <p><strong>Skills:</strong> {profileData.skills.map(s => s.skill).join(", ")}</p>
             )}
             <p>
               <strong>Commissions:</strong>{" "}
