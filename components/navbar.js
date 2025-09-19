@@ -67,7 +67,7 @@ useEffect(() => {
           <span>{ userAccount?.username || profile?.username || "User"}</span>
         </a>
         <div className={styles.navbarDropdown}>
-          <Link href="/profile" className={styles.dropdownItem}>
+          <Link href="/my-profile" className={styles.dropdownItem}>
             Business Profile
           </Link>
           <Link href="/businessProfile" className={styles.dropdownItem}>
